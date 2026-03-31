@@ -68,7 +68,7 @@ async function loadVideos() {
 }
 
    div.innerHTML = `
-   <video src="${video.url}" loop muted playsinline></video>
+   <video src="${BASE_URL}${video.url}" loop muted playsinline></video>
     <div class="centerHeart">❤️</div>;
   
     <div class="info">
