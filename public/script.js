@@ -430,9 +430,8 @@ videoUpload.addEventListener("change", () => {
   videoPreview.style.display = "block";
 });
 
-uploadBtn.addEventListener("click", async () => {
+openUpload.addEventListener("dblclick", async () => {
   const file = videoUpload.files[0];
-
   if (!file) {
     alert("Video select karo pehle");
     return;
