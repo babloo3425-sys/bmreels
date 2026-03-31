@@ -1,3 +1,6 @@
+const BASE_URL = window.location.origin;
+console.log("BASE_URL:", BASE_URL);
+
 let currentVideoId = null;
 let commentsData = {};
 let currentCommentBtn = null;
@@ -39,7 +42,6 @@ async function loadVideos() {
   if (isLoading) return;
   isLoading = true;
   
-  const BASE_URL = window.location.origin;
   const res = await fetch(`${BASE_URL}/api/videos?offset=${offset}`);
   const data = await res.json();
   const dpCache = {};
