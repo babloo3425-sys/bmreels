@@ -38,16 +38,17 @@ checkLogin();
 async function loadVideos() {
   if (isLoading) return;
   isLoading = true;
-
-  const res = await fetch(`http://localhost:3001/api/videos?offset=${offset}`);
+  
+  const BASE_URL = window.location.origin;
+  const res = await fetch(`${BASE_URL}/api/videos?offset=${offset}`);
   const data = await res.json();
   const dpCache = {};
 
-  const resC = await fetch("http://localhost:3001/api/comments");
+  const resC = await fetch(`${BASE_URL}/api/comments`);
   const commentsDataFromServer = await resC.json();
   commentsData = commentsDataFromServer;
 
-  const likesRes = await fetch("http://localhost:3001/api/likes");
+  const likesRes = await fetch(`${BASE_URL}/api/likes`);
   const likesData = await likesRes.json();
 
   const container = document.getElementById("reelsContainer");
@@ -165,7 +166,7 @@ if (video.username !== currentUser) {
 
 deleteBtn.addEventListener("click", async () => {
 
-  const res = await fetch(`http://localhost:3001/api/delete-video/${video._id}`, {
+  const res = await fetch(`${BASE_URL}/api/delete-video/${video._id}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -227,7 +228,7 @@ del.addEventListener("click", async () => {
   d.remove();
 
   // server delete
-  const res = await fetch(`http://localhost:3001/api/delete-comment/${currentVideoId}`, {
+  const res = await fetch(`${BASE_URL}/api/delete-comment/${currentVideoId}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -276,7 +277,7 @@ likeBtn.addEventListener("click", async () => {
     likeBtn.setAttribute("stroke", "white");
     liked = false;
 
-    const res = await fetch(`http://localhost:3001/api/unlike/${video._id}`, {
+    const res = await fetch(`${BASE_URL}/api/unlike/${video._id}`, {
       method: "POST"
     });
 
@@ -288,7 +289,7 @@ likeBtn.addEventListener("click", async () => {
     likeBtn.setAttribute("stroke", "red");
     liked = true;
 
-    const res = await fetch(`http://localhost:3001/api/like/${video._id}`, {
+    const res = await fetch(`${BASE_URL}/api/like/${video._id}`, {
       method: "POST"
     });
 
@@ -382,7 +383,7 @@ commentPost.addEventListener("click", async () => {
   if (text === "") return;
 
   // 👇 server pe save
-  const res = await fetch(`http://localhost:3001/api/comment/${currentVideoId}`, {
+  const res = await fetch(`${BASE_URL}/api/comment/${currentVideoId}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
@@ -440,7 +441,7 @@ openUpload.addEventListener("dblclick", async () => {
   formData.append("caption", captionInput.value);
   formData.append("username", currentUser);
 
-  await fetch("http://localhost:3001/api/upload", {
+  await fetch(`${BASE_URL}/api/upload`, {
     method: "POST",
     body: formData
   });
