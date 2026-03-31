@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Profile</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="profileHeader">
+
+    <img id="profilePic" src="https://i.pravatar.cc/100" class="profilePic">
+    <input type="file" id="dpInput" accept="image/*" hidden>
+
+    <div class="profileInfo">
+      <h2 id="username"></h2>
+      <p id="followersCount"></p>
+      <p id="videoCount"></p>
+
+      <button id="followBtn">Follow</button>
+    </div>
+
+  </div>
+
+  <hr>
+
+  <div id="profileVideos" class="videoGrid"></div>
+
+  <script src="profile.js"></script>
+</body>
+</html>

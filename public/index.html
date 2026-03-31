@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>BmReels</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div id="loginBox">
+  <div class="loginCard">
+    <h2>BmReels</h2>
+    <input type="text" id="loginInput" placeholder="Enter username" />
+    <button id="loginBtn">Continue</button>
+  </div>
+</div>
+  
+  <button id="openUpload">＋</button>
+  
+  <div id="uploadBox">
+  
+  <video id="videoPreview" controls style="display:none;"></video>
+  
+  <input type="file" id="videoUpload" accept="video/*">
+  <input type="text" id="captionInput" placeholder="Enter caption">
+  <input type="text" id="usernameInput" placeholder="Enter username">
+</div>
+  
+<div id="reelsContainer"></div>
+
+<div id="loader" style="display:none;">Loading...</div>
+
+ <div id="commentOverlay"></div>
+
+<div id="commentPanel">
+  <div class="dragBar"></div>
+  <h3>Comments</h3>
+
+  <div id="commentList"></div>
+
+  <div class="commentInputBox">
+    <input type="text" id="commentInput" placeholder="Add comment...">
+    <button id="commentPost">Post</button>
+  </div>
+</div>
+  
+<script src="script.js"></script>
+</body>
+</html>
+
