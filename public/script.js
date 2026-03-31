@@ -1,4 +1,4 @@
-const BASE_URL = window.location.origin;
+const BASE_URL = "https://bmreels.onrender.com";
 console.log("BASE_URL:", BASE_URL);
 
 let currentVideoId = null;
@@ -430,7 +430,7 @@ videoUpload.addEventListener("change", () => {
   videoPreview.style.display = "block";
 });
 
-openUpload.addEventListener("dblclick", async () => {
+uploadBtn.addEventListener("click", async () => {
   const file = videoUpload.files[0];
 
   if (!file) {
