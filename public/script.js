@@ -1,5 +1,5 @@
 const BASE_URL = "https://bmreels.onrender.com";
-console.log("BASE_URL:", BASE_URL);
+console.log("USING BASE URL:", BASE_URL);
 
 let currentVideoId = null;
 let commentsData = {};
