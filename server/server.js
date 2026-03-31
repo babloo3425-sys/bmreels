@@ -17,9 +17,9 @@ require("dotenv").config();
 
 const mongoose = require("mongoose")
 
-mongoose.connect(process.env.MONGO_URI)
+mongoose.connect(process.env.MONGO_URI || "mongodb+srv://bblkumar8_db_user:BBlk1973MMkrSH@cluster0.baicjxm.mongodb.net/?retryWrites=true&w=majority")
   .then(() => console.log("MongoDB connected"))
-  .catch(err => console.log(err));
+  .catch(err => console.log("Mongo Error:", err));
 
 const videoSchema = new mongoose.Schema({
   url: String,
