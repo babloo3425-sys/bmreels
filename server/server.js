@@ -11,6 +11,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+require("dotenv").config();
+
+const mongoose = require("mongoose")
+
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
   .catch(err => console.log(err));
@@ -99,9 +103,11 @@ app.listen(PORT, () => {
 
 // storage config
 const storage = multer.diskStorage({
+  
   destination: (req, file, cb) => {
-    cb(null, "public/videos");
+  cb(null, path.join(__dirname, "../public/videos"));
   },
+  
   filename: (req, file, cb) => {
     cb(null, Date.now() + path.extname(file.originalname));
   }
