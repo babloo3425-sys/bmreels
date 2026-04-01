@@ -1,26 +1,26 @@
-const BASE_URL = "https://bmreels.onrender.com";
-console.log("USING BASE URL:", BASE_URL);
+ const BASE_URL = "https://bmreels.onrender.com";
+ console.log("USING BASE URL:", BASE_URL);
 
-let currentVideoId = null;
-let commentsData = {};
-let currentCommentBtn = null;
-let offset = 0;
-let isLoading = false;
-let currentUser = null;
+ let currentVideoId = null;
+ let commentsData = {};
+ let currentCommentBtn = null;
+ let offset = 0;
+ let isLoading = false;
+ let currentUser = null;
 
 
-document.addEventListener("DOMContentLoaded", () => {
+ document.addEventListener("DOMContentLoaded", () => {
 
-function checkLogin() {
+ function checkLogin() {
   const saved = localStorage.getItem("bm_user");
 
   if (saved) {
     currentUser = saved; // ✅ global assign
     document.getElementById("loginBox").style.display = "none";
   }
-}
+ }
 
-document.getElementById("loginBtn").addEventListener("click", () => {
+ document.getElementById("loginBtn").addEventListener("click", () => {
   const val = document.getElementById("loginInput").value.trim();
 
   if (!val) {
@@ -32,13 +32,13 @@ document.getElementById("loginBtn").addEventListener("click", () => {
   currentUser = val; // ✅ global assign
 
   document.getElementById("loginBox").style.display = "none";
-});
+ });
 
-checkLogin();
+ checkLogin();
 
-});
+ });
 
-async function loadVideos() {
+ async function loadVideos() {
   if (isLoading) return;
   isLoading = true;
   
@@ -67,7 +67,7 @@ async function loadVideos() {
   console.log("No more videos");
   isLoading = true; // stop future calls
   return;
-}
+ }
 
    div.innerHTML = `
    <video src="${BASE_URL}${video.url}" loop muted playsinline></video>
@@ -78,21 +78,21 @@ async function loadVideos() {
     <img src="https://i.pravatar.cc/40" class="avatar">
     <span class="username">@${cleanUsername}</span>
   <span class="follow">Follow</span>
-</div>
+ </div>
   
-<p>${video.caption}</p>
-</div>
+ <p>${video.caption}</p>
+ </div>
 
-<div class="musicBar">
+ <div class="musicBar">
   🎵 Original Audio - ${video.username}
-</div>
+ </div>
 
   <div class="actions">
     
   <div class="actionItem">
       <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="white" stroke-width="2">
   <path d="M12 21s-6.7-4.35-10-8.28C-1.4 8.24 1.42 3 6 3c2.04 0 3.2 1.24 4 2.09C10.8 4.24 11.96 3 14 3c4.58 0 7.4 5.24 4 9.72C18.7 16.65 12 21 12 21z"/>
-</svg>
+ </svg>
       <span>${video.likes || 0}</span>
       </div>
 
@@ -106,7 +106,7 @@ async function loadVideos() {
   <div class="actionItem deleteBtn">
   🗑️
     
-</div>
+ </div>
     <div class="actionItem">
       <svg viewBox="0 0 24 24" width="28" height="28" fill="white">
         <path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.59 5.58L20 12l-8-8-8 8z"/>
@@ -115,44 +115,44 @@ async function loadVideos() {
       </div>
     
   </div>
-`;
+ `;
 
-const avatar = div.querySelector(".avatar");
+    const avatar = div.querySelector(".avatar");
 
-// ✅ cache check
-if (dpCache[video.username]) {
-  avatar.src = dpCache[video.username];
-} else {
-  fetch(`/api/user/${video.username}`)
-    .then(res => res.json())
-    .then(data => {
-      if (data.dp) {
-        dpCache[video.username] = data.dp; // save cache
-        avatar.src = data.dp;
-      }
-    });
-}
+   // ✅ cache check
+         if (dpCache[video.username]) {
+         avatar.src = dpCache[video.username];
+     } else {
+         fetch(`/api/user/${video.username}`)
+        .then(res => res.json())
+        .then(data => {
+         if (data.dp) {
+         dpCache[video.username] = data.dp; // save cache
+         avatar.src = data.dp;
+       }
+     });
+    }
 
-const usernameEl = div.querySelector(".username");
+       const usernameEl = div.querySelector(".username");
 
-usernameEl.onclick = () => {
-  window.location.href = `/profile.html?user=${video.username}`;
-};
+        usernameEl.onclick = () => {
+        window.location.href = `/profile.html?user=${video.username}`;
+       };
 
-const muteBtn = div.querySelector(".muteBtn");
-const videoEl = div.querySelector("video");
+      const muteBtn = div.querySelector(".muteBtn");
+      const videoEl = div.querySelector("video");
 
-// ✅ FIX: सही URL लगाओ
-videoEl.src = `${BASE_URL}${video.url}`;
+ // ✅ FIX: सही URL लगाओ
+ videoEl.src = `${BASE_URL}${video.url}`;
 
-// default mute
-videoEl.muted = true;
+ // default mute
+ videoEl.muted = true;
 
-// button click
-muteBtn.addEventListener("click", () => {
+ // button click
+ muteBtn.addEventListener("click", () => {
   videoEl.muted = !videoEl.muted;
   
-muteBtn.textContent = videoEl.muted ? "🔇" : "🔊";
+ muteBtn.textContent = videoEl.muted ? "🔇" : "🔊";
 
 
  });
@@ -163,12 +163,12 @@ muteBtn.textContent = videoEl.muted ? "🔇" : "🔊";
 
  const deleteBtn = div.querySelector(".deleteBtn");
 
-// 🔐 show only if owner
-if (video.username !== currentUser) {
+ // 🔐 show only if owner
+ if (video.username !== currentUser) {
   deleteBtn.style.display = "none";
-}
+ }
 
-deleteBtn.addEventListener("click", async () => {
+ deleteBtn.addEventListener("click", async () => {
 
   const res = await fetch(`${BASE_URL}/api/delete-video/${video._id}`, {
     method: "POST",
@@ -185,16 +185,16 @@ deleteBtn.addEventListener("click", async () => {
   } else {
     alert("Not allowed");
   }
-});
+ });
 
-const commentBtn = div.querySelector(".commentBtnIcon");
+ const commentBtn = div.querySelector(".commentBtnIcon");
 
-const panel = document.getElementById("commentPanel");
-const overlay = document.getElementById("commentOverlay");
+ const panel = document.getElementById("commentPanel");
+ const overlay = document.getElementById("commentOverlay");
 
-const commentCountSpan = commentBtn.querySelector("span");
+ const commentCountSpan = commentBtn.querySelector("span");
 
-commentBtn.addEventListener("click", () => {
+ commentBtn.addEventListener("click", () => {
   panel.classList.add("show");
   overlay.classList.add("show");
 
@@ -211,24 +211,24 @@ commentBtn.addEventListener("click", () => {
 
   comments.forEach(c => {
   const d = document.createElement("div");
-d.style.display = "flex";
-d.style.justifyContent = "space-between";
+ d.style.display = "flex";
+ d.style.justifyContent = "space-between";
 
-const text = document.createElement("span");
-text.textContent = c;
+ const text = document.createElement("span");
+ text.textContent = c;
 
-const del = document.createElement("button");
-del.textContent = "❌";
-del.style.background = "none";
-del.style.border = "none";
-del.style.cursor = "pointer";
+ const del = document.createElement("button");
+ del.textContent = "❌";
+ del.style.background = "none";
+ del.style.border = "none";
+ del.style.cursor = "pointer";
 
-d.appendChild(text);
-d.appendChild(del);
+ d.appendChild(text);
+ d.appendChild(del);
 
-commentList.appendChild(d);
+ commentList.appendChild(d);
   
-del.addEventListener("click", async () => {
+ del.addEventListener("click", async () => {
   d.remove();
 
   // server delete
@@ -250,12 +250,12 @@ del.addEventListener("click", async () => {
 
  });
 
-});
+ });
 
-const likeBtn = div.querySelector(".actionItem svg");
-const heart = videoEl.parentElement.querySelector(".centerHeart");
+ const likeBtn = div.querySelector(".actionItem svg");
+ const heart = videoEl.parentElement.querySelector(".centerHeart");
 
-videoEl.addEventListener("dblclick", () => {
+ videoEl.addEventListener("dblclick", () => {
   if (!heart) return;
 
   heart.classList.remove("show");
@@ -269,13 +269,13 @@ videoEl.addEventListener("dblclick", () => {
   if (!liked) {
     likeBtn.dispatchEvent(new Event("click")); // ✅ FIX
   }
-});
+ });
 
-const likeCount = div.querySelector(".actionItem span");
+ const likeCount = div.querySelector(".actionItem span");
 
-let liked = false;
+ let liked = false;
 
-likeBtn.addEventListener("click", async () => {
+ likeBtn.addEventListener("click", async () => {
   if (liked) {
     likeBtn.setAttribute("fill", "none");
     likeBtn.setAttribute("stroke", "white");
@@ -306,14 +306,14 @@ likeBtn.addEventListener("click", async () => {
   setTimeout(() => {
     likeBtn.classList.remove("active");
   }, 200);
-});
+ });
     container.appendChild(div);
   });
 
   setupScrollVideo(); // 👈 MOST IMPORTANT
-}
+ }
 
-function setupScrollVideo() {
+ function setupScrollVideo() {
   const container = document.getElementById("reelsContainer");
 
   function handleScroll() {
@@ -337,11 +337,11 @@ function setupScrollVideo() {
 
   container.addEventListener("scroll", handleScroll);
   window.addEventListener("load", handleScroll);
-}
+ }
 
-loadVideos();
+ loadVideos();
 
-function handleScrollPlay() {
+ function handleScrollPlay() {
   const reels = document.querySelectorAll(".reel");
   const container = document.getElementById("reelsContainer");
   const containerTop = container.getBoundingClientRect().top;
@@ -360,29 +360,29 @@ function handleScrollPlay() {
       video.currentTime = 0;
     }
   });
-}
+ }
 
-// 👇 container scroll (correct)
-const container = document.getElementById("reelsContainer");
-container.addEventListener("scroll", handleScrollPlay);
+ // 👇 container scroll (correct)
+ const container = document.getElementById("reelsContainer");
+ container.addEventListener("scroll", handleScrollPlay);
 
-// 👇 first load pe run
-window.addEventListener("load", handleScrollPlay);
-setTimeout(handleScrollPlay, 100);
+ // 👇 first load pe run
+ window.addEventListener("load", handleScrollPlay);
+ setTimeout(handleScrollPlay, 100);
 
-const panel = document.getElementById("commentPanel");
-const overlay = document.getElementById("commentOverlay");
+ const panel = document.getElementById("commentPanel");
+ const overlay = document.getElementById("commentOverlay");
 
-overlay.addEventListener("click", () => {
+ overlay.addEventListener("click", () => {
   panel.classList.remove("show");
   overlay.classList.remove("show");
-});
+ });
 
-const commentInput = document.getElementById("commentInput");
-const commentPost = document.getElementById("commentPost");
-const commentList = document.getElementById("commentList");
+ const commentInput = document.getElementById("commentInput");
+ const commentPost = document.getElementById("commentPost");
+ const commentList = document.getElementById("commentList");
 
-commentPost.addEventListener("click", async () => {
+ commentPost.addEventListener("click", async () => {
   const text = commentInput.value.trim();
   if (text === "") return;
 
@@ -407,22 +407,22 @@ commentPost.addEventListener("click", async () => {
 
   // 👇 input clear
   commentInput.value = "";
-});
+ });
 
-const videoUpload = document.getElementById("videoUpload");
-const captionInput = document.getElementById("captionInput");
-const usernameInput = document.getElementById("usernameInput");
+ const videoUpload = document.getElementById("videoUpload");
+ const captionInput = document.getElementById("captionInput");
+ const usernameInput = document.getElementById("usernameInput");
 
-const openUpload = document.getElementById("openUpload");
-const uploadBox = document.getElementById("uploadBox");
-const videoPreview = document.getElementById("videoPreview");
-const uploadBtn = document.getElementById("uploadBtn");
+ const openUpload = document.getElementById("openUpload");
+ const uploadBox = document.getElementById("uploadBox");
+ const videoPreview = document.getElementById("videoPreview");
+ const uploadBtn = document.getElementById("uploadBtn");
 
-openUpload.addEventListener("click", () => {
+  openUpload.addEventListener("click", () => {
   uploadBox.classList.toggle("show");
-});
+ });
 
-videoUpload.addEventListener("change", () => {
+  videoUpload.addEventListener("change", () => {
   const file = videoUpload.files[0];
   if (!file) return;
 
@@ -430,9 +430,9 @@ videoUpload.addEventListener("change", () => {
 
   videoPreview.src = url;
   videoPreview.style.display = "block";
-});
+ });
 
-if (uploadBtn) {
+  if (uploadBtn) {
   uploadBtn.addEventListener("click", async () => {
     const file = videoUpload.files[0];
 
@@ -462,11 +462,11 @@ if (uploadBtn) {
     console.log("NOT JSON RESPONSE");
   }
 
-} catch (err) {
+ } catch (err) {
   console.log("UPLOAD ERROR:", err);
   }
-});
-}
+ });
+ }
 
   // reset
   videoUpload.value = "";
@@ -479,14 +479,14 @@ if (uploadBtn) {
   uploadBox.classList.remove("show");
 
  offset = 0;
-container.innerHTML = "";
-loadVideos();
+ container.innerHTML = "";
+ loadVideos();
 
-container.addEventListener("scroll", () => {
+ container.addEventListener("scroll", () => {
   if (
     container.scrollTop + container.clientHeight >=
     container.scrollHeight - 50
   ) {
     loadVideos();
   }
-});
+ });
