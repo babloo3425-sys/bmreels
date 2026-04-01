@@ -142,24 +142,26 @@ usernameEl.onclick = () => {
 const muteBtn = div.querySelector(".muteBtn");
 const videoEl = div.querySelector("video");
 
+// ✅ FIX: सही URL लगाओ
+videoEl.src = `${BASE_URL}${video.url}`;
+
 // default mute
 videoEl.muted = true;
 
 // button click
 muteBtn.addEventListener("click", () => {
   videoEl.muted = !videoEl.muted;
-
-  muteBtn.textContent = videoEl.muted ? "🔇" : "🔊";
-});
-
+  
+muteBtn.textContent = videoEl.muted ? "🔇" : "🔊";
 
 
-container.appendChild(div);
-  offset += data.length;
-  isLoading = false;
+ });
 
+ container.appendChild(div);
+ offset += data.length;
+ isLoading = false;
 
-const deleteBtn = div.querySelector(".deleteBtn");
+ const deleteBtn = div.querySelector(".deleteBtn");
 
 // 🔐 show only if owner
 if (video.username !== currentUser) {
