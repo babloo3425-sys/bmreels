@@ -443,10 +443,23 @@ uploadBtn.addEventListener("click", async () => {
   formData.append("caption", captionInput.value);
   formData.append("username", currentUser);
 
-  await fetch(`${BASE_URL}/api/upload`, {
-    method: "POST",
-    body: formData
-  });
+  try {
+    const res = await fetch(`${BASE_URL}/api/upload`, {
+      method: "POST",
+      body: formData
+    });
+
+    if (!res.ok) {
+      throw new Error("Upload failed");
+    }
+
+    const data = await res.json();
+    console.log("UPLOAD SUCCESS:", data);
+
+  } catch (err) {
+    console.log("UPLOAD ERROR:", err);
+    alert("Upload failed (network/server issue)");
+  }
 
   // reset
   videoUpload.value = "";
