@@ -434,59 +434,72 @@
 
   if (uploadBtn) {
   uploadBtn.addEventListener("click", async () => {
-    const file = videoUpload.files[0];
+  const file = videoUpload.files[0];
 
-    if (!file) {
-      alert("Video select karo pehle");
-      return;
-    }
+  if (!file) {
+    alert("Video select karo pehle");
+    return;
+  }
 
-    const formData = new FormData();
-    formData.append("video", file);
-    formData.append("caption", captionInput.value);
-    formData.append("username", currentUser);
-
-    try {
-  const res = await fetch(`${BASE_URL}/api/upload`, {
-    method: "POST",
-    body: formData
-  });
-
-  const text = await res.text(); // पहले text लो
-  console.log("RAW RESPONSE:", text);
+  const formData = new FormData();
+  formData.append("video", file);
+  formData.append("caption", captionInput.value);
+  formData.append("username", currentUser);
 
   try {
-    const data = JSON.parse(text);
-    console.log("UPLOAD SUCCESS:", data);
-  } catch (e) {
-    console.log("NOT JSON RESPONSE");
+    const res = await fetch(`${BASE_URL}/api/upload`, {
+      method: "POST",
+      body: formData
+    });
+
+    const text = await res.text();
+    console.log("RAW RESPONSE:", text);
+
+    let isSuccess = false;
+
+    try {
+      const data = JSON.parse(text);
+      console.log("UPLOAD SUCCESS:", data);
+
+      if (data.success) {
+        isSuccess = true;
+      }
+
+    } catch (e) {
+      console.log("NOT JSON RESPONSE");
+    }
+
+    // ✅ success होने पर ही UI update
+    if (isSuccess) {
+
+      // reset UI
+      videoUpload.value = "";
+      videoPreview.src = "";
+      videoPreview.style.display = "none";
+      captionInput.value = "";
+      usernameInput.value = "";
+
+      uploadBox.classList.remove("show");
+
+      // 🔥 instant reload
+      offset = 0;
+      container.innerHTML = "";
+
+      await loadVideos();
+    }
+
+  } catch (err) {
+    console.log("UPLOAD ERROR:", err);
   }
+ }); // ✅ यही missing bracket था
+}
 
- } catch (err) {
-  console.log("UPLOAD ERROR:", err);
-  }
- });
- }
-
-  // reset
-  videoUpload.value = "";
-  videoPreview.src = "";
-  videoPreview.style.display = "none";
-  captionInput.value = "";
-  usernameInput.value = "";
-
-  // close panel
-  uploadBox.classList.remove("show");
-
- offset = 0;
- container.innerHTML = "";
- loadVideos();
-
- container.addEventListener("scroll", () => {
+// scroll listener (separate)
+container.addEventListener("scroll", () => {
   if (
     container.scrollTop + container.clientHeight >=
     container.scrollHeight - 50
   ) {
     loadVideos();
   }
- });
+});
