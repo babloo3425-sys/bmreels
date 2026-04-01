@@ -106,10 +106,17 @@ app.listen(PORT, () => {
 });
 
 // storage config
+const uploadPath = path.join(__dirname, "../public/videos");
+
+// folder auto create
+if (!fs.existsSync(uploadPath)) {
+  fs.mkdirSync(uploadPath, { recursive: true });
+}
+
 const storage = multer.diskStorage({
   
   destination: (req, file, cb) => {
-  cb(null, path.join(__dirname, "../public/videos"));
+    cb(null, uploadPath);
   },
   
   filename: (req, file, cb) => {
