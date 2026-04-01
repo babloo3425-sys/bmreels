@@ -445,18 +445,25 @@ if (uploadBtn) {
     formData.append("username", currentUser);
 
     try {
-      const res = await fetch(`${BASE_URL}/api/upload`, {
-        method: "POST",
-        body: formData
-      });
-
-      const data = await res.json();
-      console.log("UPLOAD SUCCESS:", data);
-
-    } catch (err) {
-      console.log("UPLOAD ERROR:", err);
-    }
+  const res = await fetch(`${BASE_URL}/api/upload`, {
+    method: "POST",
+    body: formData
   });
+
+  const text = await res.text(); // पहले text लो
+  console.log("RAW RESPONSE:", text);
+
+  try {
+    const data = JSON.parse(text);
+    console.log("UPLOAD SUCCESS:", data);
+  } catch (e) {
+    console.log("NOT JSON RESPONSE");
+  }
+
+} catch (err) {
+  console.log("UPLOAD ERROR:", err);
+  }
+});
 }
 
   // reset
