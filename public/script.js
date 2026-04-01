@@ -469,8 +469,9 @@ if (uploadBtn) {
   // close panel
   uploadBox.classList.remove("show");
 
-  // reload
-  location.reload();
+ offset = 0;
+container.innerHTML = "";
+loadVideos();
 
 container.addEventListener("scroll", () => {
   if (
