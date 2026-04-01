@@ -430,36 +430,34 @@ videoUpload.addEventListener("change", () => {
   videoPreview.style.display = "block";
 });
 
-uploadBtn.addEventListener("click", async () => {
-  const file = videoUpload.files[0];
+if (uploadBtn) {
+  uploadBtn.addEventListener("click", async () => {
+    const file = videoUpload.files[0];
 
-  if (!file) {
-    alert("Video select karo pehle");
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append("video", file);
-  formData.append("caption", captionInput.value);
-  formData.append("username", currentUser);
-
-  try {
-    const res = await fetch(`${BASE_URL}/api/upload`, {
-      method: "POST",
-      body: formData
-    });
-
-    if (!res.ok) {
-      throw new Error("Upload failed");
+    if (!file) {
+      alert("Video select karo pehle");
+      return;
     }
 
-    const data = await res.json();
-    console.log("UPLOAD SUCCESS:", data);
+    const formData = new FormData();
+    formData.append("video", file);
+    formData.append("caption", captionInput.value);
+    formData.append("username", currentUser);
 
-  } catch (err) {
-    console.log("UPLOAD ERROR:", err);
-    alert("Upload failed (network/server issue)");
-  }
+    try {
+      const res = await fetch(`${BASE_URL}/api/upload`, {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await res.json();
+      console.log("UPLOAD SUCCESS:", data);
+
+    } catch (err) {
+      console.log("UPLOAD ERROR:", err);
+    }
+  });
+}
 
   // reset
   videoUpload.value = "";
@@ -473,7 +471,6 @@ uploadBtn.addEventListener("click", async () => {
 
   // reload
   location.reload();
-});
 
 container.addEventListener("scroll", () => {
   if (
