@@ -117,10 +117,7 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({
-  storage,
-  limits: { fileSize: 100 * 1024 * 1024 } // 100MB
-});
+const upload = multer({ storage });
 
 // get likes
 app.get("/api/likes", (req, res) => {
@@ -185,19 +182,30 @@ app.post("/api/delete-comment/:id", async (req, res) => {
 });
 
 app.post("/api/upload", upload.single("video"), async (req, res) => {
-  const fileUrl = `/videos/${req.file.filename}`;
-  const { caption, username } = req.body;
+  try {
+    console.log("FILE:", req.file);
 
-  await Video.create({
-    url: fileUrl,
-    username,
-    caption,
-    userId: username
-  });
+    if (!req.file) {
+      return res.status(400).json({ error: "File not received" });
+    }
 
-  res.json({ success: true });
+    const fileUrl = `/videos/${req.file.filename}`;
+    const { caption, username } = req.body;
+
+    await Video.create({
+      url: fileUrl,
+      username,
+      caption,
+      userId: username
+    });
+
+    res.json({ success: true });
+
+  } catch (err) {
+    console.log("UPLOAD ERROR:", err);
+    res.status(500).json({ error: "Upload failed" });
+  }
 });
-
 // ================= PROFILE ROUTE =================
 
 // Get profile data + user videos
