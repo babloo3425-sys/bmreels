@@ -373,18 +373,26 @@ function setupScrollVideo() {
   function handleScroll() {
     const reels = container.querySelectorAll(".reel");
 
-    const containerScroll = container.scrollTop;
-    const containerHeight = container.clientHeight;
-    const containerCenter = containerScroll + containerHeight / 2;
+    let closest = null;
+    let minDiff = Infinity;
 
+    const containerCenter = container.scrollTop + container.clientHeight / 2;
+
+    reels.forEach(reel => {
+      const reelCenter = reel.offsetTop + reel.offsetHeight / 2;
+      const diff = Math.abs(containerCenter - reelCenter);
+
+      if (diff < minDiff) {
+        minDiff = diff;
+        closest = reel;
+      }
+    });
+
+    // 🔥 ONLY closest reel plays
     reels.forEach(reel => {
       const video = reel.querySelector("video");
 
-      const reelTop = reel.offsetTop;
-      const reelHeight = reel.offsetHeight;
-      const reelCenter = reelTop + reelHeight / 2;
-
-      if (Math.abs(containerCenter - reelCenter) < reelHeight / 2) {
+      if (reel === closest) {
         video.play().catch(() => {});
       } else {
         video.pause();
@@ -392,14 +400,10 @@ function setupScrollVideo() {
     });
   }
 
-  // ❗ पहले पुराने listeners हटाओ (important)
-  container.onscroll = null;
-
-  // ✅ नया attach
   container.addEventListener("scroll", handleScroll);
 
-  // ✅ page load पर run
-  setTimeout(handleScroll, 200);
+  // initial run
+  setTimeout(handleScroll, 300);
 }
 // ================= INIT =================
 // ❗ पहले videos load करो
