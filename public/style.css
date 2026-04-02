@@ -17,18 +17,23 @@ body {
 
 /* each reel */
 .reel {
-  min-height: 100vh; /* 🔥 change from height to min-height */
+  height: 100vh;
   width: 100%;
   scroll-snap-align: start;
+
   position: relative;
+
+  display: block; /* ❗ IMPORTANT (flex हटाओ) */
 }
 
 /* video full */
 .reel video {
+  position: absolute;  /* 🔥 KEY FIX */
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
 }
 
 .info {
