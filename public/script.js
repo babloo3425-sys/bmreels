@@ -15,14 +15,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const loginInput = document.getElementById("loginInput");
   const loginBox = document.getElementById("loginBox");
 
-  // 🔥 auto login
-  const saved = localStorage.getItem("bm_user");
-  if (saved) {
-    currentUser = saved;
-    loginBox.style.display = "none";
-  }
+  // ✅ AUTO LOGIN
+  const savedUser = localStorage.getItem("bm_user");
 
-  // 🔥 safe event binding
+  if (savedUser) {
+  currentUser = savedUser;
+  loginBox.classList.add("hide");
+}
+
+  // ✅ LOGIN CLICK
   if (loginBtn) {
     loginBtn.addEventListener("click", () => {
 
@@ -36,10 +37,11 @@ document.addEventListener("DOMContentLoaded", () => {
       localStorage.setItem("bm_user", val);
       currentUser = val;
 
-      loginBox.style.display = "none";
+      console.log("LOGIN SAVED:", val);
 
-      location.reload(); // optional but better
+      loginBox.classList.add("hide");
     });
+
   }
 
 });
@@ -128,8 +130,8 @@ data.forEach(video => {
 
 });
 
- offset += data.length;
- isLoading = false;
+offset += data.length;
+isLoading = false;
 
 const avatar = div.querySelector(".avatar");
 

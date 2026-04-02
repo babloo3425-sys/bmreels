@@ -368,3 +368,7 @@ video {
   object-fit: cover;
   cursor: pointer;
 }
+
+.hide {
+  display: none !important;
+}
