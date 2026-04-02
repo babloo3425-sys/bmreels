@@ -8,7 +8,7 @@ let offset = 0;
 let isLoading = false;
 let currentUser = null;
 
-
+// ================= LOGIN =================
 document.addEventListener("DOMContentLoaded", () => {
 
   const loginBtn = document.getElementById("loginBtn");
@@ -19,9 +19,9 @@ document.addEventListener("DOMContentLoaded", () => {
   const savedUser = localStorage.getItem("bm_user");
 
   if (savedUser) {
-  currentUser = savedUser;
-  loginBox.classList.add("hide");
-}
+    currentUser = savedUser;
+    loginBox.classList.add("hide");
+  }
 
   // ✅ LOGIN CLICK
   if (loginBtn) {
@@ -41,130 +41,131 @@ document.addEventListener("DOMContentLoaded", () => {
 
       loginBox.classList.add("hide");
     });
-
   }
 
 });
 
+// ================= LOAD VIDEOS =================
 async function loadVideos() {
   if (isLoading) return;
   isLoading = true;
 
+  const res = await fetch(`${BASE_URL}/api/videos?offset=${offset}`);
+  const data = await res.json();
 
-const res = await fetch(`${BASE_URL}/api/videos?offset=${offset}`);
-const data = await res.json();
-const dpCache = {};
+  const dpCache = {}; // ⚠️ हर load में reset (ठीक है अभी)
 
-const resC = await fetch(`${BASE_URL}/api/comments`);
-const commentsDataFromServer = await resC.json();
-commentsData = commentsDataFromServer;
+  const resC = await fetch(`${BASE_URL}/api/comments`);
+  const commentsDataFromServer = await resC.json();
+  commentsData = commentsDataFromServer;
 
-const likesRes = await fetch(`${BASE_URL}/api/likes`);
-const likesData = await likesRes.json();
+  const likesRes = await fetch(`${BASE_URL}/api/likes`);
+  const likesData = await likesRes.json();
 
-const container = document.getElementById("reelsContainer");
+  const container = document.getElementById("reelsContainer");
 
-if (data.length === 0) {
-  console.log("No more videos");
-  isLoading = true; // stop future calls
-  return;
-}
+  if (data.length === 0) {
+    console.log("No more videos");
+    isLoading = true; // stop future calls
+    return;
+  }
 
-data.forEach(video => {
-  console.log("VIDEO USER:", video.username);
-  console.log("DP KEY:", "dp_" + video.username);
+  data.forEach(video => {
+    console.log("VIDEO USER:", video.username);
+    console.log("DP KEY:", "dp_" + video.username);
 
-  const cleanUsername = video.username.replace("@", "").trim();
-  const div = document.createElement("div");
-  div.className = "reel";
+    const cleanUsername = video.username.replace("@", "").trim();
+    const div = document.createElement("div");
+    div.className = "reel";
 
-  div.innerHTML = `
-   <video src="${BASE_URL}${video.url}" loop muted playsinline></video>
-    <div class="centerHeart">❤️</div>;
+    // ❌ BUG FIX: extra ; हटाया गया
+    div.innerHTML = `
+      <video src="${BASE_URL}${video.url}" loop muted playsinline></video>
+      <div class="centerHeart">❤️</div>
   
-    <div class="info">
-  <div class="userRow">
-    <img src="https://i.pravatar.cc/40" class="avatar">
-    <span class="username">@${cleanUsername}</span>
-  <span class="follow">Follow</span>
- </div>
+      <div class="info">
+        <div class="userRow">
+          <img src="https://i.pravatar.cc/40" class="avatar">
+          <span class="username">@${cleanUsername}</span>
+          <span class="follow">Follow</span>
+        </div>
   
- <p>${video.caption}</p>
- </div>
-
- <div class="musicBar">
-  🎵 Original Audio - ${video.username}
- </div>
-
-  <div class="actions">
-    
-  <div class="actionItem">
-      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="white" stroke-width="2">
-  <path d="M12 21s-6.7-4.35-10-8.28C-1.4 8.24 1.42 3 6 3c2.04 0 3.2 1.24 4 2.09C10.8 4.24 11.96 3 14 3c4.58 0 7.4 5.24 4 9.72C18.7 16.65 12 21 12 21z"/>
- </svg>
-      <span>${video.likes || 0}</span>
+        <p>${video.caption}</p>
       </div>
 
-    <div class="actionItem commentBtnIcon">
-  💬
-    <span>${(video.comments || []).length}</span>
-  </div>
-   
-  <button class="muteBtn">🔇</button>
-   
-  <div class="actionItem deleteBtn">
-  🗑️
-    
- </div>
-    <div class="actionItem">
-      <svg viewBox="0 0 24 24" width="28" height="28" fill="white">
-        <path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.59 5.58L20 12l-8-8-8 8z"/>
-      </svg>
-    
+      <div class="musicBar">
+        🎵 Original Audio - ${video.username}
       </div>
-    
-  </div>
- `;
 
+      <div class="actions">
+        
+        <div class="actionItem">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="white" stroke-width="2">
+            <path d="M12 21s-6.7-4.35-10-8.28C-1.4 8.24 1.42 3 6 3c2.04 0 3.2 1.24 4 2.09C10.8 4.24 11.96 3 14 3c4.58 0 7.4 5.24 4 9.72C18.7 16.65 12 21 12 21z"/>
+          </svg>
+          <span>${video.likes || 0}</span>
+        </div>
+
+        <div class="actionItem commentBtnIcon">
+          💬
+          <span>${(video.comments || []).length}</span>
+        </div>
+   
+        <button class="muteBtn">🔇</button>
+   
+        <div class="actionItem deleteBtn">
+          🗑️
+        </div>
+
+        <div class="actionItem">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="white">
+            <path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.59 5.58L20 12l-8-8-8 8z"/>
+          </svg>
+        </div>
+
+      </div>
+    `;
 
 const avatar = div.querySelector(".avatar");
 
+// ================= DP CACHE =================
 // ✅ cache check
 if (dpCache[video.username]) {
   avatar.src = dpCache[video.username];
 } else {
-  fetch(`/api/user/${video.username}`)
+  fetch(`${BASE_URL}/api/user/${video.username}`) // ❌ पहले relative था → fix किया
     .then(res => res.json())
     .then(data => {
       if (data.dp) {
         dpCache[video.username] = data.dp; // save cache
         avatar.src = data.dp;
       }
-    });
+    })
+    .catch(err => console.log("DP LOAD ERROR:", err)); // ✅ safety
 }
 
+// ================= PROFILE CLICK =================
 const usernameEl = div.querySelector(".username");
 
 usernameEl.onclick = () => {
   window.location.href = `/profile.html?user=${video.username}`;
 };
 
+// ================= VIDEO + MUTE =================
 const muteBtn = div.querySelector(".muteBtn");
 const videoEl = div.querySelector("video");
 
-// ✅ FIX: सही URL लगाओ
-videoEl.src = `${BASE_URL}${video.url}`;
+// ❌ duplicate src set avoid (PART 1 में already है)
+// videoEl.src = `${BASE_URL}${video.url}`;
 
-// default mute
 videoEl.muted = true;
 
-// button click
 muteBtn.addEventListener("click", () => {
   videoEl.muted = !videoEl.muted;
-
   muteBtn.textContent = videoEl.muted ? "🔇" : "🔊";
 });
 
+// ================= DELETE =================
 const deleteBtn = div.querySelector(".deleteBtn");
 
 // 🔐 show only if owner
@@ -173,30 +174,37 @@ if (video.username !== currentUser) {
 }
 
 deleteBtn.addEventListener("click", async () => {
+  try {
+    const res = await fetch(`${BASE_URL}/api/delete-video/${video._id}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ username: currentUser })
+    });
 
-  const res = await fetch(`${BASE_URL}/api/delete-video/${video._id}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ username: currentUser })
-  });
+    const data = await res.json();
 
-  const data = await res.json();
+    if (data.success) {
+      div.remove();
+    } else {
+      alert("Not allowed");
+    }
 
-  if (data.success) {
-    div.remove();
-  } else {
-    alert("Not allowed");
+  } catch (err) {
+    console.log("DELETE ERROR:", err);
   }
-
 });
 
+// ================= COMMENT PANEL =================
 const panel = document.getElementById("commentPanel");
 const overlay = document.getElementById("commentOverlay");
 
 const commentBtn = div.querySelector(".commentBtnIcon");
 const commentCountSpan = commentBtn.querySelector("span");
+
+// ⚠️ ensure commentList exist
+const commentList = document.getElementById("commentList");
 
 if (commentBtn) {
 
@@ -208,7 +216,9 @@ if (commentBtn) {
     currentVideoId = video._id;
     currentCommentBtn = commentCountSpan;
 
-    // 👇 load comments यहीं करो
+    // ❗ safety check
+    if (!commentList) return;
+
     commentList.innerHTML = "";
     const comments = video.comments || [];
 
@@ -237,18 +247,23 @@ if (commentBtn) {
       del.addEventListener("click", async () => {
         d.remove();
 
-        const res = await fetch(`${BASE_URL}/api/delete-comment/${currentVideoId}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ text: c })
-        });
+        try {
+          const res = await fetch(`${BASE_URL}/api/delete-comment/${currentVideoId}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ text: c })
+          });
 
-        const data = await res.json();
+          const data = await res.json();
 
-        video.comments = data;
-        currentCommentBtn.textContent = data.length;
+          video.comments = data;
+          currentCommentBtn.textContent = data.length;
+
+        } catch (err) {
+          console.log("COMMENT DELETE ERROR:", err);
+        }
       });
 
     });
@@ -257,9 +272,14 @@ if (commentBtn) {
 
 }
 
+// ================= LIKE SYSTEM =================
 const likeBtn = div.querySelector(".actionItem svg");
 const heart = videoEl.parentElement.querySelector(".centerHeart");
 
+// ❌ BUG FIX: liked पहले use हो रहा था → पहले declare करो
+let liked = false;
+
+// ❤️ double tap animation
 videoEl.addEventListener("dblclick", () => {
   if (!heart) return;
 
@@ -267,67 +287,83 @@ videoEl.addEventListener("dblclick", () => {
   void heart.offsetWidth;
   heart.classList.add("show");
 
-});
-setTimeout(() => {
-  heart.classList.remove("show");
-}, 600);
-
-if (!liked) {
-  likeBtn.dispatchEvent(new Event("click")); // ✅ FIX
-
-}
-
-const likeCount = div.querySelector(".actionItem span");
-let liked = false;
-
-likeBtn.addEventListener("click", async () => {
-  if (liked) {
-    likeBtn.setAttribute("fill", "none");
-    likeBtn.setAttribute("stroke", "white");
-    liked = false;
-
-    const res = await fetch(`${BASE_URL}/api/unlike/${video._id}`, {
-      method: "POST"
-    });
-
-    const data = await res.json();
-    likeCount.textContent = data.likes;
-
-  } else {
-    likeBtn.setAttribute("fill", "red");
-    likeBtn.setAttribute("stroke", "red");
-    liked = true;
-
-    const res = await fetch(`${BASE_URL}/api/like/${video._id}`, {
-      method: "POST"
-    });
-
-    const data = await res.json();
-    likeCount.textContent = data.likes;
-  }
-
-  // animation
-  likeBtn.classList.add("active");
+  // ❌ पहले global setTimeout था → यहाँ move किया (per video)
   setTimeout(() => {
-    likeBtn.classList.remove("active");
-  }, 200);
+    heart.classList.remove("show");
+  }, 600);
+});
 
- });
-  
-  container.appendChild(div);
+// ❌ REMOVE किया (ये गलत था)
+// if (!liked) {
+//   likeBtn.dispatchEvent(new Event("click"));
+// }
 
- });
+// ❌ FIX: सही like count selector
+const likeCount = likeBtn.parentElement.querySelector("span");
 
-  offset += data.length;
-  isLoading = false;
+// ================= LIKE CLICK =================
+likeBtn.addEventListener("click", async () => {
+  try {
+
+    if (liked) {
+      likeBtn.setAttribute("fill", "none");
+      likeBtn.setAttribute("stroke", "white");
+      liked = false;
+
+      const res = await fetch(`${BASE_URL}/api/unlike/${video._id}`, {
+        method: "POST"
+      });
+
+      const data = await res.json();
+      likeCount.textContent = data.likes;
+
+    } else {
+      likeBtn.setAttribute("fill", "red");
+      likeBtn.setAttribute("stroke", "red");
+      liked = true;
+
+      const res = await fetch(`${BASE_URL}/api/like/${video._id}`, {
+        method: "POST"
+      });
+
+      const data = await res.json();
+      likeCount.textContent = data.likes;
+    }
+
+    // animation
+    likeBtn.classList.add("active");
+    setTimeout(() => {
+      likeBtn.classList.remove("active");
+    }, 200);
+
+  } catch (err) {
+    console.log("LIKE ERROR:", err);
   }
+});
 
-   setupScrollVideo(); // 👈 MOST IMPORTANT
+// ================= APPEND =================
+container.appendChild(div);
 
+}); // 🔥 forEach close
 
-    function setupScrollVideo() {
+offset += data.length;
+isLoading = false;
 
-    function handleScroll() {
+} // 🔥 loadVideos close
+
+// ❌ FIX: इसे DOM ready के बाद चलाना चाहिए
+document.addEventListener("DOMContentLoaded", () => {
+  setupScrollVideo();
+});
+
+   // ================= SCROLL VIDEO =================
+function setupScrollVideo() {
+
+  // ❗ container safety (important fix)
+  const container = document.getElementById("reelsContainer");
+  if (!container) return;
+
+  function handleScroll() {
     const reels = document.querySelectorAll(".reel");
     const screenCenter = window.innerHeight / 2;
 
@@ -338,7 +374,7 @@ likeBtn.addEventListener("click", async () => {
       const reelCenter = rect.top + rect.height / 2;
 
       if (Math.abs(screenCenter - reelCenter) < rect.height / 2) {
-        video.play().catch(() => { });
+        video.play().catch(() => {});
       } else {
         video.pause();
         video.currentTime = 0;
@@ -350,71 +386,70 @@ likeBtn.addEventListener("click", async () => {
   window.addEventListener("load", handleScroll);
 }
 
+// ================= INIT =================
+// ❗ पहले videos load करो
 loadVideos();
 
-function handleScrollPlay() {
-  const reels = document.querySelectorAll(".reel");
-  const containerTop = container.getBoundingClientRect().top;
-  const screenCenter = containerTop + container.clientHeight / 2;
+// ❗ फिर scroll setup
+document.addEventListener("DOMContentLoaded", () => {
+  setupScrollVideo();
+});
 
-  reels.forEach(reel => {
-    const rect = reel.getBoundingClientRect();
-    const video = reel.querySelector("video");
-
-    const reelCenter = rect.top + rect.height / 2;
-
-    if (Math.abs(screenCenter - reelCenter) < rect.height / 2) {
-      video.play().catch(() => { });
-    } else {
-      video.pause();
-      video.currentTime = 0;
-    }
-  });
-}
-
-// 👇 container scroll (correct)
+// ================= REMOVE DUPLICATE SCROLL =================
+// ❌ ये पूरा block duplicate था → remove किया गया
+/*
+function handleScrollPlay() { ... }
 container.addEventListener("scroll", handleScrollPlay);
-
-// 👇 first load pe run
 window.addEventListener("load", handleScrollPlay);
 setTimeout(handleScrollPlay, 100);
+*/
 
+// ================= OVERLAY CLOSE =================
 overlay.addEventListener("click", () => {
   panel.classList.remove("show");
   overlay.classList.remove("show");
 });
-
+// ================= COMMENTS POST =================
 const commentInput = document.getElementById("commentInput");
 const commentPost = document.getElementById("commentPost");
 const commentList = document.getElementById("commentList");
 
-commentPost.addEventListener("click", async () => {
-  const text = commentInput.value.trim();
-  if (text === "") return;
+// ❗ safety check (crash रोकने के लिए)
+if (commentPost) {
+  commentPost.addEventListener("click", async () => {
+    const text = commentInput.value.trim();
+    if (text === "") return;
 
-  // 👇 server pe save
-  const res = await fetch(`${BASE_URL}/api/comment/${currentVideoId}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ text })
+    try {
+      const res = await fetch(`${BASE_URL}/api/comment/${currentVideoId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ text })
+      });
+
+      const data = await res.json();
+
+      // 👇 UI update
+      const div = document.createElement("div");
+      div.textContent = text;
+      commentList.appendChild(div);
+
+      // 👇 count update
+      if (currentCommentBtn) {
+        currentCommentBtn.textContent = data.length;
+      }
+
+      commentInput.value = "";
+
+    } catch (err) {
+      console.log("COMMENT POST ERROR:", err);
+    }
   });
+}
 
-  const data = await res.json();
-
-  // 👇 UI me add
-  const div = document.createElement("div");
-  div.textContent = text;
-  commentList.appendChild(div);
-
-  // 👇 count update
-  currentCommentBtn.textContent = data.length;
-
-  // 👇 input clear
-  commentInput.value = "";
-});
-
+// ================= UPLOAD =================
 const videoUpload = document.getElementById("videoUpload");
 const captionInput = document.getElementById("captionInput");
 const usernameInput = document.getElementById("usernameInput");
@@ -424,21 +459,27 @@ const uploadBox = document.getElementById("uploadBox");
 const videoPreview = document.getElementById("videoPreview");
 const uploadBtn = document.getElementById("uploadBtn");
 
-openUpload.addEventListener("click", () => {
-  uploadBox.classList.toggle("show");
-});
+// ❗ safety check
+if (openUpload && uploadBox) {
+  openUpload.addEventListener("click", () => {
+    uploadBox.classList.toggle("show");
+  });
+}
 
-videoUpload.addEventListener("change", () => {
-  const file = videoUpload.files[0];
-  if (!file) return;
+// ================= VIDEO PREVIEW =================
+if (videoUpload) {
+  videoUpload.addEventListener("change", () => {
+    const file = videoUpload.files[0];
+    if (!file) return;
 
-  const url = URL.createObjectURL(file);
+    const url = URL.createObjectURL(file);
 
-  videoPreview.src = url;
-  videoPreview.style.display = "block";
-});
+    videoPreview.src = url;
+    videoPreview.style.display = "block";
+  });
+}
 
-// ✅ upload block
+// ================= UPLOAD BUTTON =================
 if (uploadBtn) {
 
   uploadBtn.addEventListener("click", async () => {
@@ -461,6 +502,7 @@ if (uploadBtn) {
         body: formData
       });
 
+      // ❗ पहले text check (server error पकड़ने के लिए)
       const text = await res.text();
       console.log("RAW RESPONSE:", text);
 
@@ -489,7 +531,12 @@ if (uploadBtn) {
         usernameInput.value = "";
 
         offset = 0;
-        container.innerHTML = "";
+
+        // ❗ container safety
+        const container = document.getElementById("reelsContainer");
+        if (container) {
+          container.innerHTML = "";
+        }
 
         await loadVideos();
       }
@@ -502,13 +549,16 @@ if (uploadBtn) {
 
 } // ✅ uploadBtn block close
 
+// ================= INFINITE SCROLL =================
+const container = document.getElementById("reelsContainer");
 
-// ✅ scroll listener (ALWAYS OUTSIDE)
-container.addEventListener("scroll", () => {
-  if (
-    container.scrollTop + container.clientHeight >=
-    container.scrollHeight - 50
-  ) {
-    loadVideos();
-  }
-});
+if (container) {
+  container.addEventListener("scroll", () => {
+    if (
+      container.scrollTop + container.clientHeight >=
+      container.scrollHeight - 50
+    ) {
+      loadVideos();
+    }
+  });
+}
