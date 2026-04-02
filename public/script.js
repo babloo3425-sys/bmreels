@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
 async function loadVideos() {
   if (isLoading) return;
   isLoading = true;
-}
+
 
 const res = await fetch(`${BASE_URL}/api/videos?offset=${offset}`);
 const data = await res.json();
@@ -132,7 +132,7 @@ data.forEach(video => {
 
 offset += data.length;
 isLoading = false;
-
+}
 const avatar = div.querySelector(".avatar");
 
 // ✅ cache check
