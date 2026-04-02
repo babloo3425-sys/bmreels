@@ -11,30 +11,36 @@ let currentUser = null;
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  function checkLogin() {
-    const saved = localStorage.getItem("bm_user");
+  const loginBtn = document.getElementById("loginBtn");
+  const loginInput = document.getElementById("loginInput");
+  const loginBox = document.getElementById("loginBox");
 
-    if (saved) {
-      currentUser = saved; // ✅ global assign
-      document.getElementById("loginBox").style.display = "none";
-    }
+  // 🔥 auto login
+  const saved = localStorage.getItem("bm_user");
+  if (saved) {
+    currentUser = saved;
+    loginBox.style.display = "none";
   }
 
-  document.getElementById("loginBtn").addEventListener("click", () => {
-    const val = document.getElementById("loginInput").value.trim();
+  // 🔥 safe event binding
+  if (loginBtn) {
+    loginBtn.addEventListener("click", () => {
 
-    if (!val) {
-      alert("Enter username");
-      return;
-    }
+      const val = loginInput.value.trim();
 
-    localStorage.setItem("bm_user", val);
-    currentUser = val; // ✅ global assign
+      if (!val) {
+        alert("Enter username");
+        return;
+      }
 
-    document.getElementById("loginBox").style.display = "none";
-  });
+      localStorage.setItem("bm_user", val);
+      currentUser = val;
 
-  checkLogin();
+      loginBox.style.display = "none";
+
+      location.reload(); // optional but better
+    });
+  }
 
 });
 
@@ -122,8 +128,8 @@ data.forEach(video => {
 
 });
 
-offset += data.length;
-isLoading = false;
+ offset += data.length;
+ isLoading = false;
 
 const avatar = div.querySelector(".avatar");
 
@@ -266,86 +272,60 @@ videoEl.addEventListener("dblclick", () => {
   heart.classList.add("show");
 
 });
+setTimeout(() => {
+  heart.classList.remove("show");
+}, 600);
+
+if (!liked) {
+  likeBtn.dispatchEvent(new Event("click")); // ✅ FIX
+
+}
+
+const likeCount = div.querySelector(".actionItem span");
+let liked = false;
+
+likeBtn.addEventListener("click", async () => {
+  if (liked) {
+    likeBtn.setAttribute("fill", "none");
+    likeBtn.setAttribute("stroke", "white");
+    liked = false;
+
+    const res = await fetch(`${BASE_URL}/api/unlike/${video._id}`, {
+      method: "POST"
+    });
+
+    const data = await res.json();
+    likeCount.textContent = data.likes;
+
+  } else {
+    likeBtn.setAttribute("fill", "red");
+    likeBtn.setAttribute("stroke", "red");
+    liked = true;
+
+    const res = await fetch(`${BASE_URL}/api/like/${video._id}`, {
+      method: "POST"
+    });
+
+    const data = await res.json();
+    likeCount.textContent = data.likes;
+  }
+
+  // animation
+  likeBtn.classList.add("active");
   setTimeout(() => {
-    heart.classList.remove("show");
-  }, 600);
+    likeBtn.classList.remove("active");
+  }, 200);
 
-  if (!liked) {
-    likeBtn.dispatchEvent(new Event("click")); // ✅ FIX
+});
 
-  }
-
-  const likeCount = div.querySelector(".actionItem span");
-  let liked = false;
-
-  likeBtn.addEventListener("click", async () => {
-    if (liked) {
-      likeBtn.setAttribute("fill", "none");
-      likeBtn.setAttribute("stroke", "white");
-      liked = false;
-
-      const res = await fetch(`${BASE_URL}/api/unlike/${video._id}`, {
-        method: "POST"
-      });
-
-      const data = await res.json();
-      likeCount.textContent = data.likes;
-
-    } else {
-      likeBtn.setAttribute("fill", "red");
-      likeBtn.setAttribute("stroke", "red");
-      liked = true;
-
-      const res = await fetch(`${BASE_URL}/api/like/${video._id}`, {
-        method: "POST"
-      });
-
-      const data = await res.json();
-      likeCount.textContent = data.likes;
-    }
-
-    // animation
-    likeBtn.classList.add("active");
-    setTimeout(() => {
-      likeBtn.classList.remove("active");
-    }, 200);
-
-  });
-
-  setupScrollVideo(); // 👈 MOST IMPORTANT
+setupScrollVideo(); // 👈 MOST IMPORTANT
 
 
-  function setupScrollVideo() {
+function setupScrollVideo() {
 
-    function handleScroll() {
-      const reels = document.querySelectorAll(".reel");
-      const screenCenter = window.innerHeight / 2;
-
-      reels.forEach(reel => {
-        const rect = reel.getBoundingClientRect();
-        const video = reel.querySelector("video");
-
-        const reelCenter = rect.top + rect.height / 2;
-
-        if (Math.abs(screenCenter - reelCenter) < rect.height / 2) {
-          video.play().catch(() => { });
-        } else {
-          video.pause();
-          video.currentTime = 0;
-        }
-      });
-    }
-
-    container.addEventListener("scroll", handleScroll);
-    window.addEventListener("load", handleScroll);
-  }
-
-  loadVideos();
-
-  function handleScrollPlay() {
+  function handleScroll() {
     const reels = document.querySelectorAll(".reel");
-    const containerTop = container.getBoundingClientRect().top;
-    const screenCenter = containerTop + container.clientHeight / 2;
+    const screenCenter = window.innerHeight / 2;
 
     reels.forEach(reel => {
       const rect = reel.getBoundingClientRect();
@@ -362,70 +342,96 @@ videoEl.addEventListener("dblclick", () => {
     });
   }
 
-  // 👇 container scroll (correct)
-  container.addEventListener("scroll", handleScrollPlay);
+  container.addEventListener("scroll", handleScroll);
+  window.addEventListener("load", handleScroll);
+}
 
-  // 👇 first load pe run
-  window.addEventListener("load", handleScrollPlay);
-  setTimeout(handleScrollPlay, 100);
+loadVideos();
 
-  overlay.addEventListener("click", () => {
-    panel.classList.remove("show");
-    overlay.classList.remove("show");
+function handleScrollPlay() {
+  const reels = document.querySelectorAll(".reel");
+  const containerTop = container.getBoundingClientRect().top;
+  const screenCenter = containerTop + container.clientHeight / 2;
+
+  reels.forEach(reel => {
+    const rect = reel.getBoundingClientRect();
+    const video = reel.querySelector("video");
+
+    const reelCenter = rect.top + rect.height / 2;
+
+    if (Math.abs(screenCenter - reelCenter) < rect.height / 2) {
+      video.play().catch(() => { });
+    } else {
+      video.pause();
+      video.currentTime = 0;
+    }
+  });
+}
+
+// 👇 container scroll (correct)
+container.addEventListener("scroll", handleScrollPlay);
+
+// 👇 first load pe run
+window.addEventListener("load", handleScrollPlay);
+setTimeout(handleScrollPlay, 100);
+
+overlay.addEventListener("click", () => {
+  panel.classList.remove("show");
+  overlay.classList.remove("show");
+});
+
+const commentInput = document.getElementById("commentInput");
+const commentPost = document.getElementById("commentPost");
+const commentList = document.getElementById("commentList");
+
+commentPost.addEventListener("click", async () => {
+  const text = commentInput.value.trim();
+  if (text === "") return;
+
+  // 👇 server pe save
+  const res = await fetch(`${BASE_URL}/api/comment/${currentVideoId}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ text })
   });
 
-  const commentInput = document.getElementById("commentInput");
-  const commentPost = document.getElementById("commentPost");
-  const commentList = document.getElementById("commentList");
+  const data = await res.json();
 
-  commentPost.addEventListener("click", async () => {
-    const text = commentInput.value.trim();
-    if (text === "") return;
+  // 👇 UI me add
+  const div = document.createElement("div");
+  div.textContent = text;
+  commentList.appendChild(div);
 
-    // 👇 server pe save
-    const res = await fetch(`${BASE_URL}/api/comment/${currentVideoId}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ text })
-    });
+  // 👇 count update
+  currentCommentBtn.textContent = data.length;
 
-    const data = await res.json();
+  // 👇 input clear
+  commentInput.value = "";
+});
 
-    // 👇 UI me add
-    const div = document.createElement("div");
-    div.textContent = text;
-    commentList.appendChild(div);
+const videoUpload = document.getElementById("videoUpload");
+const captionInput = document.getElementById("captionInput");
+const usernameInput = document.getElementById("usernameInput");
 
-    // 👇 count update
-    currentCommentBtn.textContent = data.length;
+const openUpload = document.getElementById("openUpload");
+const uploadBox = document.getElementById("uploadBox");
+const videoPreview = document.getElementById("videoPreview");
+const uploadBtn = document.getElementById("uploadBtn");
 
-    // 👇 input clear
-    commentInput.value = "";
-  });
+openUpload.addEventListener("click", () => {
+  uploadBox.classList.toggle("show");
+});
 
-  const videoUpload = document.getElementById("videoUpload");
-  const captionInput = document.getElementById("captionInput");
-  const usernameInput = document.getElementById("usernameInput");
+videoUpload.addEventListener("change", () => {
+  const file = videoUpload.files[0];
+  if (!file) return;
 
-  const openUpload = document.getElementById("openUpload");
-  const uploadBox = document.getElementById("uploadBox");
-  const videoPreview = document.getElementById("videoPreview");
-  const uploadBtn = document.getElementById("uploadBtn");
+  const url = URL.createObjectURL(file);
 
-  openUpload.addEventListener("click", () => {
-    uploadBox.classList.toggle("show");
-  });
-
-  videoUpload.addEventListener("change", () => {
-    const file = videoUpload.files[0];
-    if (!file) return;
-
-    const url = URL.createObjectURL(file);
-
-    videoPreview.src = url;
-videoPreview.style.display = "block";
+  videoPreview.src = url;
+  videoPreview.style.display = "block";
 });
 
 // ✅ upload block
