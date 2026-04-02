@@ -181,12 +181,7 @@
   }
  });
 
- container.appendChild(div);
-
- });
-
-   offset += data.length;
-   isLoading = false;
+ 
 
  const commentBtn = div.querySelector(".commentBtnIcon");
 
@@ -202,6 +197,13 @@
   // 👇 current video track
   currentVideoId = video._id;
   currentCommentBtn = commentCountSpan;
+
+  container.appendChild(div);
+
+ });
+
+   offset += data.length;
+   isLoading = false;
 
   // 👇 load comments
   commentList.innerHTML = "";
@@ -310,17 +312,13 @@
   }, 200);
 
  });
-    
-  container.appendChild(div);
+    container.appendChild(div);
+  });
 
- });
-   offset += data.length;
-   isLoading = false;
- 
-   setupScrollVideo(); // 👈 MOST IMPORTANT
+  setupScrollVideo(); // 👈 MOST IMPORTANT
  }
 
-  function setupScrollVideo() {
+ function setupScrollVideo() {
   const container = document.getElementById("reelsContainer");
 
   function handleScroll() {
