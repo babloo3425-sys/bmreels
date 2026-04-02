@@ -51,41 +51,7 @@
 
  const User = mongoose.model("User", userSchema);
 
- const ReelSchema = new mongoose.Schema({
-  video: String,
-  caption: String,
-
-  // 👤 किसने पोस्ट किया
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User"
-  },
-
-  // ❤️ likes system (future ready)
-  likes: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User"
-    }
-  ],
-
-  // 💬 comments (basic structure)
-  comments: [
-    {
-      user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-      text: String,
-      createdAt: { type: Date, default: Date.now }
-    }
-  ],
-
-  createdAt: {
-    type: Date,
-    default: Date.now
-  }
- });
-
- const Reel = mongoose.model("Reel", ReelSchema);
-
+ 
  let likesData = {};
  let commentsData = {};
  let reels = []; // अगर पहले से है तो same use करो
@@ -329,32 +295,10 @@
 
  // ================= GET DP =================
 
-  app.get("/api/user/:username", async (req, res) => {
+ app.get("/api/user/:username", async (req, res) => {
   const user = await User.findOne({ username: req.params.username });
 
   res.json({
     dp: user?.dp || null
   });
  });
-
- app.post("/upload", upload.single("video"), async (req, res) => {
-  const caption = req.body.caption;
-
-  const newReel = new Reel({
-    video: "/uploads/" + req.file.filename,
-    caption,
-    user: req.user._id   // ⚠️ auth से आना चाहिए
-  });
-
-  await newReel.save();
-
-  res.json({ success: true });
-});
-
-app.get("/reels", async (req, res) => {
-  const reels = await Reel.find()
-    .populate("user", "username profilePic")
-    .sort({ createdAt: -1 });
-
-  res.json(reels);
-});
