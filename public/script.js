@@ -41,6 +41,7 @@
  async function loadVideos() {
   if (isLoading) return;
   isLoading = true;
+  }
   
   const res = await fetch(`${BASE_URL}/api/videos?offset=${offset}`);
   const data = await res.json();
@@ -57,9 +58,9 @@
     
     if (data.length === 0) {
    console.log("No more videos");
-   isLoading = true; // stop future calls
+   isLoading = false; // ✔ सही
    return;
-   }
+ }
 
     data.forEach(video => {
     console.log("VIDEO USER:", video.username);
@@ -182,8 +183,8 @@
  
  });
 
- const panel = document.getElementById("commentPanel");
- const overlay = document.getElementById("commentOverlay");
+  const panel = document.getElementById("commentPanel");
+  const overlay = document.getElementById("commentOverlay");
 
   const commentBtn = div.querySelector(".commentBtnIcon");
   const commentCountSpan = commentBtn.querySelector("span");
@@ -305,17 +306,17 @@
 
  });
     container.appendChild(div);
+
   });
 
-});
-
-setupScrollVideo(); // 👈 MOST IMPORTANT
- }
-
-  function setupScrollVideo() {
-  const container = document.getElementById("reelsContainer");
-
-   function handleScroll() {
+    offset += data.length;
+    isLoading = false;
+  
+   setupScrollVideo(); // 👈 MOST IMPORTANT
+ 
+    function setupScrollVideo() {
+  
+    function handleScroll() {
     const reels = document.querySelectorAll(".reel");
     const screenCenter = window.innerHeight / 2;
 
@@ -340,9 +341,8 @@ setupScrollVideo(); // 👈 MOST IMPORTANT
 
  loadVideos();
 
- function handleScrollPlay() {
+  function handleScrollPlay() {
   const reels = document.querySelectorAll(".reel");
-  const container = document.getElementById("reelsContainer");
   const containerTop = container.getBoundingClientRect().top;
   const screenCenter = containerTop + container.clientHeight / 2;
 
@@ -362,17 +362,13 @@ setupScrollVideo(); // 👈 MOST IMPORTANT
  }
 
  // 👇 container scroll (correct)
- const container = document.getElementById("reelsContainer");
  container.addEventListener("scroll", handleScrollPlay);
 
  // 👇 first load pe run
  window.addEventListener("load", handleScrollPlay);
  setTimeout(handleScrollPlay, 100);
 
- const panel = document.getElementById("commentPanel");
- const overlay = document.getElementById("commentOverlay");
-
- overlay.addEventListener("click", () => {
+  overlay.addEventListener("click", () => {
   panel.classList.remove("show");
   overlay.classList.remove("show");
  });
@@ -501,4 +497,7 @@ container.addEventListener("scroll", () => {
   ) {
     loadVideos();
   }
+
+ });
+
 });
