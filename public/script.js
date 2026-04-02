@@ -367,23 +367,26 @@ function setupScrollVideo() {
   if (!container) return;
 
   function handleScroll() {
-    const reels = document.querySelectorAll(".reel");
-    const screenCenter = window.innerHeight / 2;
+  const reels = document.querySelectorAll(".reel");
 
-    reels.forEach(reel => {
-      const rect = reel.getBoundingClientRect();
-      const video = reel.querySelector("video");
+  // ❗ container center निकालो (window नहीं)
+  const containerRect = container.getBoundingClientRect();
+  const containerCenter = containerRect.top + container.clientHeight / 2;
 
-      const reelCenter = rect.top + rect.height / 2;
+  reels.forEach(reel => {
+    const rect = reel.getBoundingClientRect();
+    const video = reel.querySelector("video");
 
-      if (Math.abs(screenCenter - reelCenter) < rect.height / 2) {
-        video.play().catch(() => {});
-      } else {
-       video.pause();
-// video.currentTime = 0; ❌ REMOVE THIS
-      }
-    });
-  }
+    const reelCenter = rect.top + rect.height / 2;
+
+    if (Math.abs(containerCenter - reelCenter) < rect.height / 2) {
+      video.play().catch(() => {});
+    } else {
+      video.pause();
+      // ❌ reset नहीं करना
+    }
+  });
+}
 
   container.addEventListener("scroll", handleScroll);
   window.addEventListener("load", handleScroll);
