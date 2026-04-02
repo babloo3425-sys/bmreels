@@ -81,6 +81,10 @@ async function loadVideos() {
     const div = document.createElement("div");
     div.className = "reel";
 
+   // 🔥 FINAL FIX
+    div.style.display = "block";
+    div.style.height = "100vh";
+
     // ❌ BUG FIX: extra ; हटाया गया
     div.innerHTML = `
       <video src="${BASE_URL}${video.url}" loop muted playsinline autoplay></video>
