@@ -273,6 +273,7 @@
  }
 
   const likeCount = div.querySelector(".actionItem span");
+  const likeBtn = div.querySelector(".likeBtn");
 
   let liked = false;
 
