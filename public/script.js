@@ -379,8 +379,8 @@ function setupScrollVideo() {
       if (Math.abs(screenCenter - reelCenter) < rect.height / 2) {
         video.play().catch(() => {});
       } else {
-        video.pause();
-        video.currentTime = 0;
+       video.pause();
+// video.currentTime = 0; ❌ REMOVE THIS
       }
     });
   }
