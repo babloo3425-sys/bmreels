@@ -54,6 +54,12 @@
   const likesData = await likesRes.json();
 
   const container = document.getElementById("reelsContainer");
+    
+    if (data.length === 0) {
+   console.log("No more videos");
+   isLoading = true; // stop future calls
+   return;
+   }
 
     data.forEach(video => {
     console.log("VIDEO USER:", video.username);
@@ -62,13 +68,7 @@
     const cleanUsername = video.username.replace("@", "").trim();
     const div = document.createElement("div");
     div.className = "reel";
-
-   if (data.length === 0) {
-  console.log("No more videos");
-  isLoading = true; // stop future calls
-  return;
- }
-
+   
    div.innerHTML = `
    <video src="${BASE_URL}${video.url}" loop muted playsinline></video>
     <div class="centerHeart">❤️</div>;
@@ -148,18 +148,19 @@
  // default mute
  videoEl.muted = true;
 
- // button click
- muteBtn.addEventListener("click", () => {
+  // button click
+  muteBtn.addEventListener("click", () => {
   videoEl.muted = !videoEl.muted;
   
- muteBtn.textContent = videoEl.muted ? "🔇" : "🔊";
-
-
+  muteBtn.textContent = videoEl.muted ? "🔇" : "🔊";
  });
 
  container.appendChild(div);
- offset += data.length;
- isLoading = false;
+
+ });
+  
+  offset += data.length;
+  isLoading = false;
 
  const deleteBtn = div.querySelector(".deleteBtn");
 
@@ -264,18 +265,18 @@
 
   setTimeout(() => {
     heart.classList.remove("show");
-  }, 600);
+   }, 600);
 
-  if (!liked) {
+   if (!liked) {
     likeBtn.dispatchEvent(new Event("click")); // ✅ FIX
-  }
- });
 
- const likeCount = div.querySelector(".actionItem span");
+ }
 
- let liked = false;
+  const likeCount = div.querySelector(".actionItem span");
 
- likeBtn.addEventListener("click", async () => {
+  let liked = false;
+
+  likeBtn.addEventListener("click", async () => {
   if (liked) {
     likeBtn.setAttribute("fill", "none");
     likeBtn.setAttribute("stroke", "white");
@@ -306,6 +307,7 @@
   setTimeout(() => {
     likeBtn.classList.remove("active");
   }, 200);
+
  });
     container.appendChild(div);
   });
