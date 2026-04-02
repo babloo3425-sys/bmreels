@@ -8,32 +8,27 @@ body {
   overflow-x: hidden;
 }
 
-/* ================= CONTAINER ================= */
+ /* container */
 #reelsContainer {
   height: 100vh;
   overflow-y: scroll;
   scroll-snap-type: y mandatory;
-  scroll-behavior: smooth;
 }
 
-/* ================= REEL ================= */
+/* each reel */
 .reel {
-  height: 100vh;
+  min-height: 100vh; /* 🔥 change from height to min-height */
   width: 100%;
   scroll-snap-align: start;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
   position: relative;
 }
 
-/* ================= VIDEO ================= */
+/* video full */
 .reel video {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  display: block;
 }
 
 .info {
