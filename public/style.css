@@ -8,6 +8,7 @@ body {
   overflow-x: hidden;
 }
 
+/* ================= CONTAINER ================= */
 #reelsContainer {
   height: 100vh;
   overflow-y: scroll;
@@ -15,14 +16,21 @@ body {
   scroll-behavior: smooth;
 }
 
+/* ================= REEL ================= */
 .reel {
   height: 100vh;
-  position: relative;
+  width: 100%;
   scroll-snap-align: start;
-  overflow: hidden; /* 👈 IMPORTANT */
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  position: relative;
 }
 
-video {
+/* ================= VIDEO ================= */
+.reel video {
   width: 100%;
   height: 100%;
   object-fit: cover;

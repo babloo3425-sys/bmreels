@@ -83,7 +83,7 @@ async function loadVideos() {
 
     // ❌ BUG FIX: extra ; हटाया गया
     div.innerHTML = `
-      <video src="${BASE_URL}${video.url}" loop muted playsinline></video>
+      <video src="${BASE_URL}${video.url}" loop muted playsinline autoplay></video>
       <div class="centerHeart">❤️</div>
   
       <div class="info">
@@ -344,6 +344,7 @@ likeBtn.addEventListener("click", async () => {
   }
 });
 
+ div.style.height = "100vh";
 // ================= APPEND =================
 container.appendChild(div);
 
