@@ -179,81 +179,73 @@
   } else {
     alert("Not allowed");
   }
- });
-
  
-
- const commentBtn = div.querySelector(".commentBtnIcon");
+ });
 
  const panel = document.getElementById("commentPanel");
  const overlay = document.getElementById("commentOverlay");
 
- const commentCountSpan = commentBtn.querySelector("span");
-
- commentBtn.addEventListener("click", () => {
-  panel.classList.add("show");
-  overlay.classList.add("show");
-
-  // 👇 current video track
-  currentVideoId = video._id;
-  currentCommentBtn = commentCountSpan;
-
-  container.appendChild(div);
-
- });
-
-   offset += data.length;
-   isLoading = false;
-
-  // 👇 load comments
-  commentList.innerHTML = "";
-  const comments = video.comments || [];
-
-  // 👇 count fix
-  currentCommentBtn.textContent = comments.length;
-
-  comments.forEach(c => {
-  const d = document.createElement("div");
- d.style.display = "flex";
- d.style.justifyContent = "space-between";
-
- const text = document.createElement("span");
- text.textContent = c;
-
- const del = document.createElement("button");
- del.textContent = "❌";
- del.style.background = "none";
- del.style.border = "none";
- del.style.cursor = "pointer";
-
- d.appendChild(text);
- d.appendChild(del);
-
- commentList.appendChild(d);
+  const commentBtn = div.querySelector(".commentBtnIcon");
+  const commentCountSpan = commentBtn.querySelector("span");
   
- del.addEventListener("click", async () => {
-  d.remove();
+  if (commentBtn) {
 
-  // server delete
-  const res = await fetch(`${BASE_URL}/api/delete-comment/${currentVideoId}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ text: c })
+  commentBtn.addEventListener("click", () => {
+    panel.classList.add("show");
+    overlay.classList.add("show");
+
+    // current video track
+    currentVideoId = video._id;
+    currentCommentBtn = commentCountSpan;
+
+    // 👇 load comments यहीं करो
+    commentList.innerHTML = "";
+    const comments = video.comments || [];
+
+    // count fix
+    currentCommentBtn.textContent = comments.length;
+
+    comments.forEach(c => {
+
+      const d = document.createElement("div");
+      d.style.display = "flex";
+      d.style.justifyContent = "space-between";
+
+      const text = document.createElement("span");
+      text.textContent = c;
+
+      const del = document.createElement("button");
+      del.textContent = "❌";
+      del.style.background = "none";
+      del.style.border = "none";
+      del.style.cursor = "pointer";
+
+      d.appendChild(text);
+      d.appendChild(del);
+      commentList.appendChild(d);
+
+      del.addEventListener("click", async () => {
+        d.remove();
+
+        const res = await fetch(`${BASE_URL}/api/delete-comment/${currentVideoId}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ text: c })
+        });
+
+        const data = await res.json();
+
+        video.comments = data;
+        currentCommentBtn.textContent = data.length;
+      });
+
+    });
+
   });
 
-    const data = await res.json();
-
-    // 🔥 current video में update करो
-     video.comments = data;
-
-    currentCommentBtn.textContent = data.length;
-  });
-
- });
-
- });
+}
 
  const likeBtn = div.querySelector(".actionItem svg");
  const heart = videoEl.parentElement.querySelector(".centerHeart");
@@ -315,13 +307,15 @@
     container.appendChild(div);
   });
 
-  setupScrollVideo(); // 👈 MOST IMPORTANT
+});
+
+setupScrollVideo(); // 👈 MOST IMPORTANT
  }
 
- function setupScrollVideo() {
+  function setupScrollVideo() {
   const container = document.getElementById("reelsContainer");
 
-  function handleScroll() {
+   function handleScroll() {
     const reels = document.querySelectorAll(".reel");
     const screenCenter = window.innerHeight / 2;
 
