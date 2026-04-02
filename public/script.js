@@ -1,76 +1,76 @@
- const BASE_URL = "https://bmreels.onrender.com";
- console.log("USING BASE URL:", BASE_URL);
+const BASE_URL = "https://bmreels.onrender.com";
+console.log("USING BASE URL:", BASE_URL);
 
- let currentVideoId = null;
- let commentsData = {};
- let currentCommentBtn = null;
- let offset = 0;
- let isLoading = false;
- let currentUser = null;
+let currentVideoId = null;
+let commentsData = {};
+let currentCommentBtn = null;
+let offset = 0;
+let isLoading = false;
+let currentUser = null;
 
 
- document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
 
- function checkLogin() {
-  const saved = localStorage.getItem("bm_user");
+  function checkLogin() {
+    const saved = localStorage.getItem("bm_user");
 
-  if (saved) {
-    currentUser = saved; // ✅ global assign
+    if (saved) {
+      currentUser = saved; // ✅ global assign
+      document.getElementById("loginBox").style.display = "none";
+    }
+  }
+
+  document.getElementById("loginBtn").addEventListener("click", () => {
+    const val = document.getElementById("loginInput").value.trim();
+
+    if (!val) {
+      alert("Enter username");
+      return;
+    }
+
+    localStorage.setItem("bm_user", val);
+    currentUser = val; // ✅ global assign
+
     document.getElementById("loginBox").style.display = "none";
-  }
- }
+  });
 
- document.getElementById("loginBtn").addEventListener("click", () => {
-  const val = document.getElementById("loginInput").value.trim();
+  checkLogin();
 
-  if (!val) {
-    alert("Enter username");
-    return;
-  }
+});
 
-  localStorage.setItem("bm_user", val);
-  currentUser = val; // ✅ global assign
-
-  document.getElementById("loginBox").style.display = "none";
- });
-
- checkLogin();
-
- });
-
- async function loadVideos() {
+async function loadVideos() {
   if (isLoading) return;
   isLoading = true;
-  }
-  
-  const res = await fetch(`${BASE_URL}/api/videos?offset=${offset}`);
-  const data = await res.json();
-  const dpCache = {};
+}
 
-  const resC = await fetch(`${BASE_URL}/api/comments`);
-  const commentsDataFromServer = await resC.json();
-  commentsData = commentsDataFromServer;
+const res = await fetch(`${BASE_URL}/api/videos?offset=${offset}`);
+const data = await res.json();
+const dpCache = {};
 
-  const likesRes = await fetch(`${BASE_URL}/api/likes`);
-  const likesData = await likesRes.json();
+const resC = await fetch(`${BASE_URL}/api/comments`);
+const commentsDataFromServer = await resC.json();
+commentsData = commentsDataFromServer;
 
-  const container = document.getElementById("reelsContainer");
-    
-    if (data.length === 0) {
-   console.log("No more videos");
-   isLoading = false; // ✔ सही
-   return;
- }
+const likesRes = await fetch(`${BASE_URL}/api/likes`);
+const likesData = await likesRes.json();
 
-    data.forEach(video => {
-    console.log("VIDEO USER:", video.username);
-    console.log("DP KEY:", "dp_" + video.username);
-    
-    const cleanUsername = video.username.replace("@", "").trim();
-    const div = document.createElement("div");
-    div.className = "reel";
-   
-   div.innerHTML = `
+const container = document.getElementById("reelsContainer");
+
+if (data.length === 0) {
+  console.log("No more videos");
+  isLoading = true; // stop future calls
+  return;
+}
+
+data.forEach(video => {
+  console.log("VIDEO USER:", video.username);
+  console.log("DP KEY:", "dp_" + video.username);
+
+  const cleanUsername = video.username.replace("@", "").trim();
+  const div = document.createElement("div");
+  div.className = "reel";
+
+  div.innerHTML = `
    <video src="${BASE_URL}${video.url}" loop muted playsinline></video>
     <div class="centerHeart">❤️</div>;
   
@@ -118,52 +118,59 @@
   </div>
  `;
 
-    const avatar = div.querySelector(".avatar");
+  container.appendChild(div);
 
-   // ✅ cache check
-         if (dpCache[video.username]) {
-         avatar.src = dpCache[video.username];
-     } else {
-         fetch(`/api/user/${video.username}`)
-        .then(res => res.json())
-        .then(data => {
-         if (data.dp) {
-         dpCache[video.username] = data.dp; // save cache
-         avatar.src = data.dp;
-       }
-     });
-    }
+});
 
-       const usernameEl = div.querySelector(".username");
+offset += data.length;
+isLoading = false;
 
-        usernameEl.onclick = () => {
-        window.location.href = `/profile.html?user=${video.username}`;
-       };
+const avatar = div.querySelector(".avatar");
 
-      const muteBtn = div.querySelector(".muteBtn");
-      const videoEl = div.querySelector("video");
+// ✅ cache check
+if (dpCache[video.username]) {
+  avatar.src = dpCache[video.username];
+} else {
+  fetch(`/api/user/${video.username}`)
+    .then(res => res.json())
+    .then(data => {
+      if (data.dp) {
+        dpCache[video.username] = data.dp; // save cache
+        avatar.src = data.dp;
+      }
+    });
+}
 
- // ✅ FIX: सही URL लगाओ
- videoEl.src = `${BASE_URL}${video.url}`;
+const usernameEl = div.querySelector(".username");
 
- // default mute
- videoEl.muted = true;
+usernameEl.onclick = () => {
+  window.location.href = `/profile.html?user=${video.username}`;
+};
 
-  // button click
-  muteBtn.addEventListener("click", () => {
+const muteBtn = div.querySelector(".muteBtn");
+const videoEl = div.querySelector("video");
+
+// ✅ FIX: सही URL लगाओ
+videoEl.src = `${BASE_URL}${video.url}`;
+
+// default mute
+videoEl.muted = true;
+
+// button click
+muteBtn.addEventListener("click", () => {
   videoEl.muted = !videoEl.muted;
-  
+
   muteBtn.textContent = videoEl.muted ? "🔇" : "🔊";
-  });
+});
 
-  const deleteBtn = div.querySelector(".deleteBtn");
+const deleteBtn = div.querySelector(".deleteBtn");
 
-  // 🔐 show only if owner
-  if (video.username !== currentUser) {
+// 🔐 show only if owner
+if (video.username !== currentUser) {
   deleteBtn.style.display = "none";
- }
+}
 
- deleteBtn.addEventListener("click", async () => {
+deleteBtn.addEventListener("click", async () => {
 
   const res = await fetch(`${BASE_URL}/api/delete-video/${video._id}`, {
     method: "POST",
@@ -180,16 +187,16 @@
   } else {
     alert("Not allowed");
   }
- 
- });
 
-  const panel = document.getElementById("commentPanel");
-  const overlay = document.getElementById("commentOverlay");
+});
 
-  const commentBtn = div.querySelector(".commentBtnIcon");
-  const commentCountSpan = commentBtn.querySelector("span");
-  
-  if (commentBtn) {
+const panel = document.getElementById("commentPanel");
+const overlay = document.getElementById("commentOverlay");
+
+const commentBtn = div.querySelector(".commentBtnIcon");
+const commentCountSpan = commentBtn.querySelector("span");
+
+if (commentBtn) {
 
   commentBtn.addEventListener("click", () => {
     panel.classList.add("show");
@@ -248,77 +255,97 @@
 
 }
 
- const likeBtn = div.querySelector(".actionItem svg");
- const heart = videoEl.parentElement.querySelector(".centerHeart");
+const likeBtn = div.querySelector(".actionItem svg");
+const heart = videoEl.parentElement.querySelector(".centerHeart");
 
- videoEl.addEventListener("dblclick", () => {
+videoEl.addEventListener("dblclick", () => {
   if (!heart) return;
 
   heart.classList.remove("show");
   void heart.offsetWidth;
   heart.classList.add("show");
 
+});
   setTimeout(() => {
     heart.classList.remove("show");
-   }, 600);
+  }, 600);
 
-   if (!liked) {
+  if (!liked) {
     likeBtn.dispatchEvent(new Event("click")); // ✅ FIX
 
- }
+  }
 
   const likeCount = div.querySelector(".actionItem span");
-  const likeBtn = div.querySelector(".likeBtn");
-
   let liked = false;
 
   likeBtn.addEventListener("click", async () => {
-  if (liked) {
-    likeBtn.setAttribute("fill", "none");
-    likeBtn.setAttribute("stroke", "white");
-    liked = false;
+    if (liked) {
+      likeBtn.setAttribute("fill", "none");
+      likeBtn.setAttribute("stroke", "white");
+      liked = false;
 
-    const res = await fetch(`${BASE_URL}/api/unlike/${video._id}`, {
-      method: "POST"
-    });
+      const res = await fetch(`${BASE_URL}/api/unlike/${video._id}`, {
+        method: "POST"
+      });
 
-    const data = await res.json();
-    likeCount.textContent = data.likes;
+      const data = await res.json();
+      likeCount.textContent = data.likes;
 
-  } else {
-    likeBtn.setAttribute("fill", "red");
-    likeBtn.setAttribute("stroke", "red");
-    liked = true;
+    } else {
+      likeBtn.setAttribute("fill", "red");
+      likeBtn.setAttribute("stroke", "red");
+      liked = true;
 
-    const res = await fetch(`${BASE_URL}/api/like/${video._id}`, {
-      method: "POST"
-    });
+      const res = await fetch(`${BASE_URL}/api/like/${video._id}`, {
+        method: "POST"
+      });
 
-    const data = await res.json();
-    likeCount.textContent = data.likes;
-  }
+      const data = await res.json();
+      likeCount.textContent = data.likes;
+    }
 
-  // animation
-  likeBtn.classList.add("active");
-  setTimeout(() => {
-    likeBtn.classList.remove("active");
-  }, 200);
-
- });
-    container.appendChild(div);
+    // animation
+    likeBtn.classList.add("active");
+    setTimeout(() => {
+      likeBtn.classList.remove("active");
+    }, 200);
 
   });
 
-    offset += data.length;
-    isLoading = false;
-  
-   setupScrollVideo(); // 👈 MOST IMPORTANT
- 
-    function setupScrollVideo() {
-  
+  setupScrollVideo(); // 👈 MOST IMPORTANT
+
+
+  function setupScrollVideo() {
+
     function handleScroll() {
+      const reels = document.querySelectorAll(".reel");
+      const screenCenter = window.innerHeight / 2;
+
+      reels.forEach(reel => {
+        const rect = reel.getBoundingClientRect();
+        const video = reel.querySelector("video");
+
+        const reelCenter = rect.top + rect.height / 2;
+
+        if (Math.abs(screenCenter - reelCenter) < rect.height / 2) {
+          video.play().catch(() => { });
+        } else {
+          video.pause();
+          video.currentTime = 0;
+        }
+      });
+    }
+
+    container.addEventListener("scroll", handleScroll);
+    window.addEventListener("load", handleScroll);
+  }
+
+  loadVideos();
+
+  function handleScrollPlay() {
     const reels = document.querySelectorAll(".reel");
-    const screenCenter = window.innerHeight / 2;
+    const containerTop = container.getBoundingClientRect().top;
+    const screenCenter = containerTop + container.clientHeight / 2;
 
     reels.forEach(reel => {
       const rect = reel.getBoundingClientRect();
@@ -327,7 +354,7 @@
       const reelCenter = rect.top + rect.height / 2;
 
       if (Math.abs(screenCenter - reelCenter) < rect.height / 2) {
-        video.play().catch(() => {});
+        video.play().catch(() => { });
       } else {
         video.pause();
         video.currentTime = 0;
@@ -335,161 +362,138 @@
     });
   }
 
-  container.addEventListener("scroll", handleScroll);
-  window.addEventListener("load", handleScroll);
- }
+  // 👇 container scroll (correct)
+  container.addEventListener("scroll", handleScrollPlay);
 
- loadVideos();
-
-  function handleScrollPlay() {
-  const reels = document.querySelectorAll(".reel");
-  const containerTop = container.getBoundingClientRect().top;
-  const screenCenter = containerTop + container.clientHeight / 2;
-
-  reels.forEach(reel => {
-    const rect = reel.getBoundingClientRect();
-    const video = reel.querySelector("video");
-
-    const reelCenter = rect.top + rect.height / 2;
-
-    if (Math.abs(screenCenter - reelCenter) < rect.height / 2) {
-      video.play().catch(() => {});
-    } else {
-      video.pause();
-      video.currentTime = 0;
-    }
-  });
- }
-
- // 👇 container scroll (correct)
- container.addEventListener("scroll", handleScrollPlay);
-
- // 👇 first load pe run
- window.addEventListener("load", handleScrollPlay);
- setTimeout(handleScrollPlay, 100);
+  // 👇 first load pe run
+  window.addEventListener("load", handleScrollPlay);
+  setTimeout(handleScrollPlay, 100);
 
   overlay.addEventListener("click", () => {
-  panel.classList.remove("show");
-  overlay.classList.remove("show");
- });
-
- const commentInput = document.getElementById("commentInput");
- const commentPost = document.getElementById("commentPost");
- const commentList = document.getElementById("commentList");
-
- commentPost.addEventListener("click", async () => {
-  const text = commentInput.value.trim();
-  if (text === "") return;
-
-  // 👇 server pe save
-  const res = await fetch(`${BASE_URL}/api/comment/${currentVideoId}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({ text })
+    panel.classList.remove("show");
+    overlay.classList.remove("show");
   });
 
-  const data = await res.json();
+  const commentInput = document.getElementById("commentInput");
+  const commentPost = document.getElementById("commentPost");
+  const commentList = document.getElementById("commentList");
 
-  // 👇 UI me add
-  const div = document.createElement("div");
-  div.textContent = text;
-  commentList.appendChild(div);
+  commentPost.addEventListener("click", async () => {
+    const text = commentInput.value.trim();
+    if (text === "") return;
 
-  // 👇 count update
-  currentCommentBtn.textContent = data.length;
-
-  // 👇 input clear
-  commentInput.value = "";
- });
-
- const videoUpload = document.getElementById("videoUpload");
- const captionInput = document.getElementById("captionInput");
- const usernameInput = document.getElementById("usernameInput");
-
- const openUpload = document.getElementById("openUpload");
- const uploadBox = document.getElementById("uploadBox");
- const videoPreview = document.getElementById("videoPreview");
- const uploadBtn = document.getElementById("uploadBtn");
-
-  openUpload.addEventListener("click", () => {
-  uploadBox.classList.toggle("show");
- });
-
-  videoUpload.addEventListener("change", () => {
-  const file = videoUpload.files[0];
-  if (!file) return;
-
-  const url = URL.createObjectURL(file);
-
-  videoPreview.src = url;
-  videoPreview.style.display = "block";
- });
-
-  if (uploadBtn) {
-  uploadBtn.addEventListener("click", async () => {
-  const file = videoUpload.files[0];
-
-  if (!file) {
-    alert("Video select karo pehle");
-    return;
-  }
-
-  const formData = new FormData();
-  formData.append("video", file);
-  formData.append("caption", captionInput.value);
-  formData.append("username", currentUser);
-
-  try {
-    const res = await fetch(`${BASE_URL}/api/upload`, {
+    // 👇 server pe save
+    const res = await fetch(`${BASE_URL}/api/comment/${currentVideoId}`, {
       method: "POST",
-      body: formData
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ text })
     });
 
-    const text = await res.text();
-    console.log("RAW RESPONSE:", text);
+    const data = await res.json();
 
-    let isSuccess = false;
+    // 👇 UI me add
+    const div = document.createElement("div");
+    div.textContent = text;
+    commentList.appendChild(div);
+
+    // 👇 count update
+    currentCommentBtn.textContent = data.length;
+
+    // 👇 input clear
+    commentInput.value = "";
+  });
+
+  const videoUpload = document.getElementById("videoUpload");
+  const captionInput = document.getElementById("captionInput");
+  const usernameInput = document.getElementById("usernameInput");
+
+  const openUpload = document.getElementById("openUpload");
+  const uploadBox = document.getElementById("uploadBox");
+  const videoPreview = document.getElementById("videoPreview");
+  const uploadBtn = document.getElementById("uploadBtn");
+
+  openUpload.addEventListener("click", () => {
+    uploadBox.classList.toggle("show");
+  });
+
+  videoUpload.addEventListener("change", () => {
+    const file = videoUpload.files[0];
+    if (!file) return;
+
+    const url = URL.createObjectURL(file);
+
+    videoPreview.src = url;
+videoPreview.style.display = "block";
+});
+
+// ✅ upload block
+if (uploadBtn) {
+
+  uploadBtn.addEventListener("click", async () => {
+
+    const file = videoUpload.files[0];
+
+    if (!file) {
+      alert("Video select karo pehle");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("video", file);
+    formData.append("caption", captionInput.value);
+    formData.append("username", currentUser);
 
     try {
-      const data = JSON.parse(text);
-      console.log("UPLOAD SUCCESS:", data);
+      const res = await fetch(`${BASE_URL}/api/upload`, {
+        method: "POST",
+        body: formData
+      });
 
-      if (data.success) {
-        isSuccess = true;
+      const text = await res.text();
+      console.log("RAW RESPONSE:", text);
+
+      let isSuccess = false;
+
+      try {
+        const data = JSON.parse(text);
+        console.log("UPLOAD SUCCESS:", data);
+
+        if (data.success) {
+          isSuccess = true;
+        }
+
+      } catch (e) {
+        console.log("NOT JSON RESPONSE");
       }
 
-    } catch (e) {
-      console.log("NOT JSON RESPONSE");
+      if (isSuccess) {
+
+        uploadBox.classList.remove("show");
+
+        videoUpload.value = "";
+        videoPreview.src = "";
+        videoPreview.style.display = "none";
+        captionInput.value = "";
+        usernameInput.value = "";
+
+        offset = 0;
+        container.innerHTML = "";
+
+        await loadVideos();
+      }
+
+    } catch (err) {
+      console.log("UPLOAD ERROR:", err);
     }
 
-    // ✅ success होने पर ही UI update
-    if (isSuccess) {
+  });
 
-      // reset UI
-      videoUpload.value = "";
-      videoPreview.src = "";
-      videoPreview.style.display = "none";
-      captionInput.value = "";
-      usernameInput.value = "";
+} // ✅ uploadBtn block close
 
-      uploadBox.classList.remove("show");
 
-      // 🔥 instant reload
-      offset = 0;
-      container.innerHTML = "";
-
-      await loadVideos();
-    }
-
-  } catch (err) {
-    console.log("UPLOAD ERROR:", err);
-  }
- }); // ✅ यही missing bracket था
-}
-
-// scroll listener (separate)
+// ✅ scroll listener (ALWAYS OUTSIDE)
 container.addEventListener("scroll", () => {
   if (
     container.scrollTop + container.clientHeight >=
@@ -497,7 +501,4 @@ container.addEventListener("scroll", () => {
   ) {
     loadVideos();
   }
-
- });
-
 });
