@@ -153,19 +153,12 @@
   videoEl.muted = !videoEl.muted;
   
   muteBtn.textContent = videoEl.muted ? "🔇" : "🔊";
- });
+  });
 
- container.appendChild(div);
+  const deleteBtn = div.querySelector(".deleteBtn");
 
- });
-  
-  offset += data.length;
-  isLoading = false;
-
- const deleteBtn = div.querySelector(".deleteBtn");
-
- // 🔐 show only if owner
- if (video.username !== currentUser) {
+  // 🔐 show only if owner
+  if (video.username !== currentUser) {
   deleteBtn.style.display = "none";
  }
 
@@ -187,6 +180,13 @@
     alert("Not allowed");
   }
  });
+
+ container.appendChild(div);
+
+ });
+
+   offset += data.length;
+   isLoading = false;
 
  const commentBtn = div.querySelector(".commentBtnIcon");
 
