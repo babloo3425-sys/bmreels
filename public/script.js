@@ -1,6 +1,9 @@
 const BASE_URL = "https://bmreels.onrender.com";
 console.log("USING BASE URL:", BASE_URL);
 
+const overlay = document.getElementById("commentOverlay");
+const panel = document.getElementById("commentPanel");
+
 let currentVideoId = null;
 let commentsData = {};
 let currentCommentBtn = null;
@@ -405,10 +408,12 @@ setTimeout(handleScrollPlay, 100);
 */
 
 // ================= OVERLAY CLOSE =================
-overlay.addEventListener("click", () => {
-  panel.classList.remove("show");
-  overlay.classList.remove("show");
-});
+if (overlay && panel) {
+  overlay.addEventListener("click", () => {
+    panel.classList.remove("show");
+    overlay.classList.remove("show");
+  });
+}
 // ================= COMMENTS POST =================
 const commentInput = document.getElementById("commentInput");
 const commentPost = document.getElementById("commentPost");
