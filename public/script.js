@@ -126,13 +126,7 @@ data.forEach(video => {
   </div>
  `;
 
-  container.appendChild(div);
 
-});
-
-offset += data.length;
-isLoading = false;
-}
 const avatar = div.querySelector(".avatar");
 
 // ✅ cache check
@@ -318,14 +312,22 @@ likeBtn.addEventListener("click", async () => {
     likeBtn.classList.remove("active");
   }, 200);
 
-});
+ });
+  
+  container.appendChild(div);
 
-setupScrollVideo(); // 👈 MOST IMPORTANT
+ });
+
+  offset += data.length;
+  isLoading = false;
+  }
+
+   setupScrollVideo(); // 👈 MOST IMPORTANT
 
 
-function setupScrollVideo() {
+    function setupScrollVideo() {
 
-  function handleScroll() {
+    function handleScroll() {
     const reels = document.querySelectorAll(".reel");
     const screenCenter = window.innerHeight / 2;
 
