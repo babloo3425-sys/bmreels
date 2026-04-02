@@ -310,13 +310,17 @@
   }, 200);
 
  });
-    container.appendChild(div);
-  });
+    
+  container.appendChild(div);
 
-  setupScrollVideo(); // 👈 MOST IMPORTANT
+ });
+   offset += data.length;
+   isLoading = false;
+ 
+   setupScrollVideo(); // 👈 MOST IMPORTANT
  }
 
- function setupScrollVideo() {
+  function setupScrollVideo() {
   const container = document.getElementById("reelsContainer");
 
   function handleScroll() {
