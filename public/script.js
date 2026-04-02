@@ -356,50 +356,49 @@ isLoading = false;
 
 // ❌ FIX: इसे DOM ready के बाद चलाना चाहिए
 document.addEventListener("DOMContentLoaded", () => {
+  loadVideos();
   setupScrollVideo();
 });
 
    // ================= SCROLL VIDEO =================
 function setupScrollVideo() {
-
-  // ❗ container safety (important fix)
   const container = document.getElementById("reelsContainer");
   if (!container) return;
 
   function handleScroll() {
-  const reels = document.querySelectorAll(".reel");
+    const reels = container.querySelectorAll(".reel");
 
-  // ❗ container center निकालो (window नहीं)
-  const containerRect = container.getBoundingClientRect();
-  const containerCenter = containerRect.top + container.clientHeight / 2;
+    const containerScroll = container.scrollTop;
+    const containerHeight = container.clientHeight;
+    const containerCenter = containerScroll + containerHeight / 2;
 
-  reels.forEach(reel => {
-    const rect = reel.getBoundingClientRect();
-    const video = reel.querySelector("video");
+    reels.forEach(reel => {
+      const video = reel.querySelector("video");
 
-    const reelCenter = rect.top + rect.height / 2;
+      const reelTop = reel.offsetTop;
+      const reelHeight = reel.offsetHeight;
+      const reelCenter = reelTop + reelHeight / 2;
 
-    if (Math.abs(containerCenter - reelCenter) < rect.height / 2) {
-      video.play().catch(() => {});
-    } else {
-      video.pause();
-      // ❌ reset नहीं करना
-    }
-  });
-}
+      if (Math.abs(containerCenter - reelCenter) < reelHeight / 2) {
+        video.play().catch(() => {});
+      } else {
+        video.pause();
+      }
+    });
+  }
 
+  // ❗ पहले पुराने listeners हटाओ (important)
+  container.onscroll = null;
+
+  // ✅ नया attach
   container.addEventListener("scroll", handleScroll);
-  window.addEventListener("load", handleScroll);
-}
 
+  // ✅ page load पर run
+  setTimeout(handleScroll, 200);
+}
 // ================= INIT =================
 // ❗ पहले videos load करो
 loadVideos();
-
-// ❗ फिर scroll setup
-document.addEventListener("DOMContentLoaded", () => {
-  setupScrollVideo();
-});
 
 // ================= REMOVE DUPLICATE SCROLL =================
 // ❌ ये पूरा block duplicate था → remove किया गया
