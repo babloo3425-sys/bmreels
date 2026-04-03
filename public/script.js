@@ -372,11 +372,12 @@ function setupScrollVideo() {
     const reels = document.querySelectorAll(".reel");
 
     reels.forEach(reel => {
-      const rect = reel.getBoundingClientRect();
       const video = reel.querySelector("video");
 
-      // 🔥 अगर reel screen के center में है
-      if (rect.top >= 0 && rect.top < window.innerHeight / 2) {
+      const rect = reel.getBoundingClientRect();
+
+      // 🔥 FINAL FIX: full visible check
+      if (rect.top >= 0 && rect.bottom <= window.innerHeight) {
         video.play().catch(() => {});
       } else {
         video.pause();
