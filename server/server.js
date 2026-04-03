@@ -91,19 +91,31 @@
 
 
  app.get("/api/videos", async (req, res) => {
-  const offset = parseInt(req.query.offset) || 0;
+  try {
+    // ✅ offset frontend se aayega (scroll ke time increase hoga)
+    const offset = parseInt(req.query.offset) || 0;
 
-  const videos = await Video.find()
-    .sort({ _id: -1 })
-    .skip(offset)
-    .limit(5);
+    // ✅ limit thoda increase kar dete hain (smooth UX ke liye)
+    const limit = 10;
 
-  res.json(videos);
- });
+    // ✅ MongoDB se videos fetch
+    const videos = await Video.find()
+      .sort({ _id: -1 }) // latest first
+      .skip(offset)      // pagination
+      .limit(limit);
 
- app.listen(PORT, () => {
-  console.log(`Server running`);
- });
+    // ✅ IMPORTANT: always array return ho
+    res.json({
+      success: true,
+      count: videos.length,
+      data: videos
+    });
+
+  } catch (err) {
+    console.error("Error fetching videos:", err);
+    res.status(500).json({ success: false });
+  }
+});
 
  // storage config
  const uploadPath = path.join(__dirname, "../public/videos");
