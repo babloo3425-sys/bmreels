@@ -356,7 +356,7 @@ container.appendChild(div);
 
 offset += data.length;
 isLoading = false;
-
+setupScrollVideo();
 } // 🔥 loadVideos close
 
 // ❌ FIX: इसे DOM ready के बाद चलाना चाहिए
@@ -367,43 +367,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
    // ================= SCROLL VIDEO =================
 function setupScrollVideo() {
-  const container = document.getElementById("reelsContainer");
-  if (!container) return;
+  const videos = document.querySelectorAll(".reel video");
 
-  function handleScroll() {
-    const reels = container.querySelectorAll(".reel");
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach(entry => {
+        const video = entry.target;
 
-    let closest = null;
-    let minDiff = Infinity;
+        if (entry.isIntersecting) {
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      });
+    },
+    {
+      threshold: 0.6 // 🔥 60% visible = play
+    }
+  );
 
-    const containerCenter = container.scrollTop + container.clientHeight / 2;
-
-    reels.forEach(reel => {
-      const reelCenter = reel.offsetTop + reel.offsetHeight / 2;
-      const diff = Math.abs(containerCenter - reelCenter);
-
-      if (diff < minDiff) {
-        minDiff = diff;
-        closest = reel;
-      }
-    });
-
-    // 🔥 ONLY closest reel plays
-    reels.forEach(reel => {
-      const video = reel.querySelector("video");
-
-      if (reel === closest) {
-        video.play().catch(() => {});
-      } else {
-        video.pause();
-      }
-    });
-  }
-
-  container.addEventListener("scroll", handleScroll);
-
-  // initial run
-  setTimeout(handleScroll, 300);
+  videos.forEach(video => {
+    observer.observe(video);
+  });
 }
 // ================= INIT =================
 // ❗ पहले videos load करो
