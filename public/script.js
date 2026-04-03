@@ -166,6 +166,10 @@ const videoEl = div.querySelector("video");
 // videoEl.src = `${BASE_URL}${video.url}`;
 
 videoEl.muted = true;
+// ✅ force play
+ videoEl.play().catch(err => {
+  console.log("PLAY BLOCKED:", err);
+});
 
 muteBtn.addEventListener("click", () => {
   videoEl.muted = !videoEl.muted;
