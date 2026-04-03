@@ -67,13 +67,15 @@ async function loadVideos() {
 
   const container = document.getElementById("reelsContainer");
 
-  if (data.length === 0) {
+  if (data.data.length === 0) {
   console.log("No more videos");
-  isLoading = false; // ✅ fix
+  isLoading = false;
   return;
 }
 
-  data.forEach(video => {
+
+
+  data.data.forEach(video => {
     console.log("VIDEO USER:", video.username);
     console.log("DP KEY:", "dp_" + video.username);
 
