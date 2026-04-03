@@ -111,6 +111,13 @@
       data: videos
     });
 
+   // ✅ ALWAYS LAST LINE
+   const PORT = process.env.PORT || 3001;
+
+    app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+
   } catch (err) {
     console.error("Error fetching videos:", err);
     res.status(500).json({ success: false });
