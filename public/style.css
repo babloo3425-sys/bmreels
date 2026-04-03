@@ -2,18 +2,12 @@ body {
   margin: 0;
   background: black;
   font-family: sans-serif;
+  overflow-y: auto; /* ✅ allow scroll */
 }
-
-/* 🔥 BODY FIX */
-body {
-  margin: 0;
-  overflow: hidden; /* ❗ IMPORTANT */
-}
-
-/* 🔥 CONTAINER */
+ /* 🔥 CONTAINER */
 #reelsContainer {
   height: 100vh;
-  overflow-y: auto;
+  overflow-y: scroll; /* ✅ force scroll */
   scroll-snap-type: y mandatory;
 }
 
@@ -370,19 +364,4 @@ body {
   border-radius: 50%;
   object-fit: cover;
   cursor: pointer;
-}
-
-.hide {
-  display: none !important;
-}
-
-#reelsContainer {
-  height: 100vh;
-  overflow-y: scroll;
-  scroll-snap-type: y mandatory;
-}
-
-.reel {
-  height: 100vh;
-  scroll-snap-align: start;
 }
