@@ -67,7 +67,7 @@ async function loadVideos() {
 
   const container = document.getElementById("reelsContainer");
 
-  if (data.data.length === 0) {
+  if (!data.data || data.data.length === 0)
   console.log("No more videos");
   isLoading = false;
   return;
@@ -356,10 +356,9 @@ container.appendChild(div);
 
 }); // 🔥 forEach close
 
-offset += data.length;
+offset += data.data.length;
 isLoading = false;
-setupScrollVideo();
-} // 🔥 loadVideos close
+setupScrollVideo(); // 🔥 loadVideos close
 
 // ❌ FIX: इसे DOM ready के बाद चलाना चाहिए
 document.addEventListener("DOMContentLoaded", () => {
