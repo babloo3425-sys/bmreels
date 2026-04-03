@@ -10,6 +10,7 @@ let currentCommentBtn = null;
 let offset = 0;
 let isLoading = false;
 let currentUser = null;
+let observer; // 🔥 global observer
 
 // ================= LOGIN =================
 document.addEventListener("DOMContentLoaded", () => {
@@ -362,14 +363,19 @@ setupScrollVideo();
 // ❌ FIX: इसे DOM ready के बाद चलाना चाहिए
 document.addEventListener("DOMContentLoaded", () => {
   loadVideos();
-  setupScrollVideo();
 });
 
    // ================= SCROLL VIDEO =================
 function setupScrollVideo() {
+
+  // ❗ पहले पुराना observer हटाओ
+  if (observer) {
+    observer.disconnect();
+  }
+
   const videos = document.querySelectorAll(".reel video");
 
-  const observer = new IntersectionObserver(
+  observer = new IntersectionObserver(
     (entries) => {
       entries.forEach(entry => {
         const video = entry.target;
@@ -382,7 +388,7 @@ function setupScrollVideo() {
       });
     },
     {
-      threshold: 0.6 // 🔥 60% visible = play
+      threshold: 0.7 // थोड़ा strict (better UX)
     }
   );
 
