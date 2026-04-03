@@ -84,13 +84,13 @@
  });
 
  // 👇 static frontend serve
- app.use(express.static(path.join(__dirname, "../public")));
- app.use("/videos", express.static(path.join(__dirname, "../public/videos")));
- const PORT = 3001;
+app.use(express.static(path.join(__dirname, "../public")));
+app.use("/videos", express.static(path.join(__dirname, "../public/videos")));
 
-
-
- app.get("/api/videos", async (req, res) => {
+// ✅ FIX HERE
+const PORT = process.env.PORT || 3001;
+ 
+app.get("/api/videos", async (req, res) => {
   try {
     // ✅ offset frontend se aayega (scroll ke time increase hoga)
     const offset = parseInt(req.query.offset) || 0;
@@ -111,19 +111,15 @@
       data: videos
     });
 
-   // ✅ ALWAYS LAST LINE
-   const PORT = process.env.PORT || 3001;
-
-    app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
-
   } catch (err) {
     console.error("Error fetching videos:", err);
     res.status(500).json({ success: false });
   }
-});
+ });
 
+ app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
  // storage config
  const uploadPath = path.join(__dirname, "../public/videos");
 
