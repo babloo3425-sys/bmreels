@@ -67,14 +67,11 @@ async function loadVideos() {
 
   const container = document.getElementById("reelsContainer");
 
-  if (!data.data || data.data.length === 0)
+  if (!data.data || data.data.length === 0) {
   console.log("No more videos");
   isLoading = false;
   return;
 }
-
-
-
   data.data.forEach(video => {
     console.log("VIDEO USER:", video.username);
     console.log("DP KEY:", "dp_" + video.username);
@@ -338,7 +335,7 @@ likeBtn.addEventListener("click", async () => {
       const data = await res.json();
       likeCount.textContent = data.likes;
     }
-
+   
     // animation
     likeBtn.classList.add("active");
     setTimeout(() => {
@@ -358,7 +355,9 @@ container.appendChild(div);
 
 offset += data.data.length;
 isLoading = false;
-setupScrollVideo(); // 🔥 loadVideos close
+
+setupScrollVideo();
+}
 
 // ❌ FIX: इसे DOM ready के बाद चलाना चाहिए
 document.addEventListener("DOMContentLoaded", () => {
@@ -386,23 +385,21 @@ function setupScrollVideo() {
   container.addEventListener("scroll", playVisible);
 
   setTimeout(playVisible, 300);
+
 }
 
-// ================= INIT =================
-// ❗ पहले videos load करो
-loadVideos();
 
-// ================= REMOVE DUPLICATE SCROLL =================
-// ❌ ये पूरा block duplicate था → remove किया गया
-/*
-function handleScrollPlay() { ... }
-container.addEventListener("scroll", handleScrollPlay);
-window.addEventListener("load", handleScrollPlay);
-setTimeout(handleScrollPlay, 100);
-*/
+ // ================= REMOVE DUPLICATE SCROLL =================
+ // ❌ ये पूरा block duplicate था → remove किया गया
+ /*
+ function handleScrollPlay() { ... }
+ container.addEventListener("scroll", handleScrollPlay);
+ window.addEventListener("load", handleScrollPlay);
+ setTimeout(handleScrollPlay, 100);
+ */
 
-// ================= OVERLAY CLOSE =================
-if (overlay && panel) {
+ // ================= OVERLAY CLOSE =================
+ if (overlay && panel) {
   overlay.addEventListener("click", () => {
     panel.classList.remove("show");
     overlay.classList.remove("show");
