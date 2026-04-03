@@ -10,7 +10,6 @@ let currentCommentBtn = null;
 let offset = 0;
 let isLoading = false;
 let currentUser = null;
-let observer; // 🔥 global observer
 
 // ================= LOGIN =================
 document.addEventListener("DOMContentLoaded", () => {
@@ -367,31 +366,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
    // ================= SCROLL VIDEO =================
 function setupScrollVideo() {
+  const container = document.getElementById("reelsContainer");
 
-  // ❗ पहले पुराना observer हटाओ
-  if (observer) {
-    observer.disconnect();
-  }
+  container.addEventListener("scroll", () => {
+    const reels = document.querySelectorAll(".reel");
 
-  const videos = document.querySelectorAll(".reel video");
+    reels.forEach(reel => {
+      const rect = reel.getBoundingClientRect();
+      const video = reel.querySelector("video");
 
-  observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    const video = entry.target;
-
-    if (entry.isIntersecting) {
-      video.play().catch(() => {});
-    } else {
-      video.pause();
-    }
-  });
-}, {
-  root: document.getElementById("reelsContainer"), // 🔥 MOST IMPORTANT
-  threshold: 0.7
-});
-
-  videos.forEach(video => {
-    observer.observe(video);
+      // 🔥 अगर reel screen के center में है
+      if (rect.top >= 0 && rect.top < window.innerHeight / 2) {
+        video.play().catch(() => {});
+      } else {
+        video.pause();
+      }
+    });
   });
 }
 // ================= INIT =================
