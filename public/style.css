@@ -375,3 +375,14 @@ body {
 .hide {
   display: none !important;
 }
+
+#reelsContainer {
+  height: 100vh;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+}
+
+.reel {
+  height: 100vh;
+  scroll-snap-align: start;
+}
