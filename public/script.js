@@ -43,6 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log("LOGIN SAVED:", val);
 
       loginBox.classList.add("hide");
+      window.location.reload();
     });
   }
 
