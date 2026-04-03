@@ -68,10 +68,10 @@ async function loadVideos() {
   const container = document.getElementById("reelsContainer");
 
   if (data.length === 0) {
-    console.log("No more videos");
-    isLoading = true; // stop future calls
-    return;
-  }
+  console.log("No more videos");
+  isLoading = false; // ✅ fix
+  return;
+}
 
   data.forEach(video => {
     console.log("VIDEO USER:", video.username);
