@@ -388,11 +388,11 @@ function setupScrollVideo() {
       video.pause();
     }
   });
-}
+ }
 
   container.addEventListener("scroll", playVisible);
   
-  setTimeout(playVisible, 300);
+  playVisible();
  }
 
 
