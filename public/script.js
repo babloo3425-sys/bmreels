@@ -371,17 +371,24 @@ function setupScrollVideo() {
   const reels = container.querySelectorAll(".reel");
 
   function playVisible() {
-    reels.forEach(reel => {
-      const video = reel.querySelector("video");
-      const rect = reel.getBoundingClientRect();
+  reels.forEach(reel => {
+    const video = reel.querySelector("video");
+    const rect = reel.getBoundingClientRect();
 
-      if (rect.top >= 0 && rect.top < window.innerHeight / 2) {
-        video.play().catch(() => {});
-      } else {
-        video.pause();
-      }
-    });
-  }
+    // ❌ पुराना गलत condition
+    // if (rect.top >= 0 && rect.top < window.innerHeight / 2)
+
+    // ✅ नया सही condition
+    if (
+      rect.top < window.innerHeight * 0.8 &&
+      rect.bottom > window.innerHeight * 0.2
+    ) {
+      video.play().catch(() => {});
+    } else {
+      video.pause();
+    }
+  });
+}
 
   container.addEventListener("scroll", playVisible);
   
