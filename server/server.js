@@ -85,7 +85,7 @@
 
  // 👇 static frontend serve
 app.use(express.static(path.join(__dirname, "../public")));
-app.use("/videos", express.static(path.join(__dirname, "../public/videos")));
+
 
 // ✅ FIX HERE
 const PORT = process.env.PORT || 3001;
