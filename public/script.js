@@ -88,7 +88,7 @@ async function loadVideos() {
     // ❌ BUG FIX: extra ; हटाया गया
     div.innerHTML = `
       
-    <video src="${video.url}" loop muted playsinline></video>
+    <video src="${video.url || video.videoUrl}" loop muted playsinline></video>
       
       <div class="centerHeart">❤️</div>
   
