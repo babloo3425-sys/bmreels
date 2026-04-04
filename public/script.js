@@ -87,7 +87,7 @@ async function loadVideos() {
 
     // ❌ BUG FIX: extra ; हटाया गया
     div.innerHTML = `
-      <video src="${BASE_URL}${video.url}" loop muted playsinline autoplay></video>
+      <video src="${BASE_URL}${video.url}" loop muted playsinline></video>
       <div class="centerHeart">❤️</div>
   
       <div class="info">
@@ -165,13 +165,9 @@ const videoEl = div.querySelector("video");
 // ❌ duplicate src set avoid (PART 1 में already है)
 // videoEl.src = `${BASE_URL}${video.url}`;
 
-videoEl.muted = true;
-// ✅ force play
- videoEl.play().catch(err => {
-  console.log("PLAY BLOCKED:", err);
-});
+ videoEl.muted = true;
 
-muteBtn.addEventListener("click", () => {
+  muteBtn.addEventListener("click", () => {
   videoEl.muted = !videoEl.muted;
   muteBtn.textContent = videoEl.muted ? "🔇" : "🔊";
 });
@@ -372,7 +368,7 @@ document.addEventListener("DOMContentLoaded", () => {
    // ================= SCROLL VIDEO =================
 function setupScrollVideo() {
   const container = document.getElementById("reelsContainer");
-  const reels = document.querySelectorAll(".reel");
+  const reels = container.querySelectorAll(".reel");
 
   function playVisible() {
     reels.forEach(reel => {
@@ -388,10 +384,9 @@ function setupScrollVideo() {
   }
 
   container.addEventListener("scroll", playVisible);
-
+  
   setTimeout(playVisible, 300);
-
-}
+ }
 
 
  // ================= REMOVE DUPLICATE SCROLL =================
