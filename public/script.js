@@ -303,7 +303,7 @@ videoEl.addEventListener("dblclick", () => {
 
   // 🔥 NEW: like trigger (IMPORTANT)
   if (!liked) {
-    likeBtn.click(); // ✅ existing like logic use करेगा
+    likeBtn.closest(".actionItem").click(); // ✅ existing like logic use करेगा
   }
 });
 // ❌ REMOVE किया (ये गलत था)
