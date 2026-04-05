@@ -6,8 +6,9 @@
  const mongoose = require("mongoose");
  const app = express();
  const cloudinary = require("cloudinary").v2;
+ const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
- app.use(cors());
+app.use(cors());
  app.use(express.json());
  app.use(express.json({ limit: "100mb" }));
  app.use(express.urlencoded({ limit: "100mb", extended: true }));
@@ -25,7 +26,11 @@
   api_secret: "xOtiPO18An2gpd3Ep8CZylvI2dU"
 });
 
-  require("dotenv").config();
+console.log("CLOUD:", process.env.CLOUDINARY_CLOUD_NAME);
+console.log("KEY:", process.env.CLOUDINARY_API_KEY);
+console.log("SECRET:", process.env.CLOUDINARY_API_SECRET);
+
+require("dotenv").config();
   mongoose.connect(process.env.MONGO_URI || "mongodb+srv://bblkumar8_db_user:BBlk1973MMkrSH@cluster0.baicjxm.mongodb.net/?retryWrites=true&w=majority")
   .then(() => console.log("MongoDB connected"))
   .catch(err => console.log("Mongo Error:", err));
@@ -135,8 +140,6 @@ app.get("/api/videos", async (req, res) => {
  if (!fs.existsSync(uploadPath)) {
   fs.mkdirSync(uploadPath, { recursive: true });
  }
-
- const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
  const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
