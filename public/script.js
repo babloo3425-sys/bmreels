@@ -126,7 +126,7 @@ async function loadVideos() {
           🗑️
         </div>
 
-        <div class="actionItem">
+        <div class="actionItem shareBtn">
           <svg viewBox="0 0 24 24" width="28" height="28" fill="white">
             <path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.59 5.58L20 12l-8-8-8 8z"/>
           </svg>
@@ -284,12 +284,13 @@ if (commentBtn) {
 // ================= LIKE SYSTEM =================
 const likeBtn = div.querySelector(".actionItem svg");
 const heart = videoEl.parentElement.querySelector(".centerHeart");
+const shareBtn = div.querySelector(".shareBtn");
 
-// ❌ BUG FIX: liked पहले use हो रहा था → पहले declare करो
-let liked = false;
+ // ❌ BUG FIX: liked पहले use हो रहा था → पहले declare करो
+ let liked = false;
 
-// ❤️ double tap animation
-videoEl.addEventListener("dblclick", () => {
+ // ❤️ double tap animation
+ videoEl.addEventListener("dblclick", () => {
   if (!heart) return;
 
   // ❤️ animation (same as before)
@@ -303,13 +304,38 @@ videoEl.addEventListener("dblclick", () => {
 
    if (!liked) {
   likeBtn.dispatchEvent(new Event("click"));
- }
-});
-// ❌ FIX: सही like count selector
-const likeCount = likeBtn.parentElement.querySelector("span");
+  }
+ });
 
-// ================= LIKE CLICK =================
-likeBtn.addEventListener("click", async () => {
+  if (shareBtn) {
+  shareBtn.addEventListener("click", async () => {
+
+    const shareUrl = video.url;
+
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: "BMReels",
+          text: "Watch this reel 🔥",
+          url: shareUrl
+        });
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        alert("Link copied!");
+      }
+
+    } catch (err) {
+      console.log("SHARE ERROR:", err);
+    }
+
+  });
+ }
+
+ // ❌ FIX: सही like count selector
+ const likeCount = likeBtn.parentElement.querySelector("span");
+
+ // ================= LIKE CLICK =================
+ likeBtn.addEventListener("click", async () => {
   try {
 
     if (liked) {
