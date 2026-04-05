@@ -2,15 +2,20 @@ body {
   margin: 0;
   background: black;
   font-family: sans-serif;
-  overflow-y: auto; /* ✅ allow scroll */
+
+  overflow: hidden; /* 🔥 MAIN FIX (body scroll बंद) */
 }
- /* 🔥 CONTAINER */
+
+/* 🔥 CONTAINER */
 #reelsContainer {
   height: 100vh;
-  overflow-y: scroll; /* ✅ force scroll */
+  overflow-y: auto; /* ✅ सिर्फ यही scroll करेगा */
   scroll-snap-type: y mandatory;
 }
 
+#reelsContainer {
+  scroll-behavior: smooth;
+}
 /* 🔥 EACH REEL */
 .reel {
   height: 100vh;
@@ -18,7 +23,6 @@ body {
   scroll-snap-align: start;
   position: relative;
 }
-
 /* 🔥 VIDEO FULL SCREEN */
 .reel video {
   width: 100%;
