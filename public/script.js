@@ -471,91 +471,94 @@ if (openUpload && uploadBox) {
   });
 }
 
-// ================= VIDEO PREVIEW =================
+// ================= VIDEO PREVIEW + UPLOAD =================
 if (videoUpload) {
-  videoUpload.addEventListener("change", () => {
+  videoUpload.addEventListener("change", async () => {
+
     const file = videoUpload.files[0];
     if (!file) return;
 
-    const url = URL.createObjectURL(file);
-
-    videoPreview.src = url;
-    videoPreview.style.display = "block";
-  });
-}
-
-// ================= UPLOAD BUTTON =================
-if (uploadBtn) {
-
-  uploadBtn.addEventListener("click", async () => {
-
-    const file = videoUpload.files[0];
-
-    if (!file) {
-      alert("Video select karo pehle");
+    // ❗ username safety
+    if (!currentUser) {
+      alert("Login required");
       return;
     }
 
-    try {
+    // ✅ PREVIEW
+    const url = URL.createObjectURL(file);
+    videoPreview.src = url;
+    videoPreview.style.display = "block";
 
-      // 🔥 STEP 1 — Cloudinary upload
+    try {
+      // 🔥 Cloudinary upload
       const formData = new FormData();
       formData.append("file", file);
       formData.append("upload_preset", "bmreels_preset");
 
-      const cloudRes = await fetch("https://api.cloudinary.com/v1_1/dzbzbljod/video/upload", {
+      const res = await fetch("https://api.cloudinary.com/v1_1/dzbzbljod/video/upload", {
         method: "POST",
         body: formData
       });
 
-      const cloudData = await cloudRes.json();
-      console.log("CLOUD:", cloudData);
+      // ❗ response safety
+      if (!res.ok) {
+        throw new Error("Cloudinary upload failed");
+      }
 
-      if (!cloudData.secure_url) {
+      const data = await res.json();
+      console.log("CLOUD:", data);
+
+      if (!data.secure_url) {
         alert("Upload failed");
         return;
       }
 
-      // 🔥 STEP 2 — DB save
-      const res = await fetch(`${BASE_URL}/api/save-video`, {
+      // 🔥 DB save
+      const saveRes = await fetch(`${BASE_URL}/api/save-video`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          url: cloudData.secure_url,
-          caption: captionInput.value,
-          username: currentUser
+          url: data.secure_url,
+          username: currentUser,
+          caption: captionInput ? captionInput.value : ""
         })
       });
 
-      const data = await res.json();
-
-      if (data.success) {
-
-        uploadBox.classList.remove("show");
-
-        videoUpload.value = "";
-        videoPreview.src = "";
-        videoPreview.style.display = "none";
-        captionInput.value = "";
-
-        offset = 0;
-
-        const container = document.getElementById("reelsContainer");
-        if (container) {
-          container.innerHTML = "";
-        }
-
-        await loadVideos();
+      if (!saveRes.ok) {
+        throw new Error("DB save failed");
       }
+
+      const saveData = await saveRes.json();
+      console.log("DB:", saveData);
+
+      // ✅ UI reset
+      videoPreview.style.display = "none";
+      videoPreview.src = "";
+
+      if (captionInput) captionInput.value = "";
+      if (usernameInput) usernameInput.value = "";
+
+      if (uploadBox) uploadBox.classList.remove("show");
+
+      // 🔥 reload reels
+      offset = 0;
+
+      const container = document.getElementById("reelsContainer");
+      if (container) {
+        container.innerHTML = "";
+      }
+
+      await loadVideos();
 
     } catch (err) {
       console.log("UPLOAD ERROR:", err);
+      alert("Upload error, try again");
+      videoPreview.style.display = "none";
     }
 
   });
-
 }
 
 // ================= INFINITE SCROLL =================
