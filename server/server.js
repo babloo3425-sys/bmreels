@@ -151,7 +151,7 @@ app.get("/api/videos", async (req, res) => {
   }
 });
 
-const upload = multer({ storage });
+const upload = multer({ dest: "uploads/" }); // ✅ temp storage
 
 // get likes
  app.get("/api/likes", (req, res) => {
@@ -215,7 +215,8 @@ const upload = multer({ storage });
   res.json(video.comments);
  });
 
- app.post("/api/upload", upload.single("video"), async (req, res) => {
+ 
+app.post("/api/upload", upload.single("video"), async (req, res) => {
   try {
     console.log("FILE RECEIVED:", req.file);
 
@@ -223,14 +224,20 @@ const upload = multer({ storage });
       return res.status(400).json({ error: "File not received" });
     }
 
-    const fileUrl = req.file.path;
-    const { caption, username } = req.body;
+    // 🔥 direct upload to cloudinary
+    const result = await cloudinary.uploader.upload(req.file.path, {
+      resource_type: "video",
+      folder: "bmreels"
+    });
+
+    // temp file delete
+    fs.unlinkSync(req.file.path);
 
     await Video.create({
-      url: fileUrl,
-      username,
-      caption,
-      userId: username
+      url: result.secure_url, // ✅ final URL
+      username: req.body.username,
+      caption: req.body.caption,
+      userId: req.body.username
     });
 
     res.json({ success: true });
@@ -239,7 +246,7 @@ const upload = multer({ storage });
     console.log("UPLOAD ERROR:", err);
     res.status(500).json({ error: "Upload failed" });
   }
- });
+});
  // ================= PROFILE ROUTE =================
 
  // Get profile data + user videos
