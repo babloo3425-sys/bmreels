@@ -301,16 +301,10 @@ videoEl.addEventListener("dblclick", () => {
     heart.classList.remove("show");
   }, 600);
 
-  // 🔥 NEW: like trigger (IMPORTANT)
-  if (!liked) {
-    likeBtn.closest(".actionItem").click(); // ✅ existing like logic use करेगा
-  }
+   if (!liked) {
+  likeBtn.dispatchEvent(new Event("click"));
+ }
 });
-// ❌ REMOVE किया (ये गलत था)
-// if (!liked) {
-//   likeBtn.dispatchEvent(new Event("click"));
-// }
-
 // ❌ FIX: सही like count selector
 const likeCount = likeBtn.parentElement.querySelector("span");
 
