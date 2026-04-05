@@ -243,9 +243,13 @@ app.post("/api/upload", upload.single("video"), async (req, res) => {
     res.json({ success: true });
 
   } catch (err) {
-    console.log("UPLOAD ERROR:", err);
-    res.status(500).json({ error: "Upload failed" });
-  }
+  console.log("UPLOAD ERROR FULL:", err); // 🔥 full error print
+
+  res.status(500).json({
+    error: err.message,     // 🔥 actual error
+    details: err            // 🔥 full object (debug)
+  });
+}
 });
  // ================= PROFILE ROUTE =================
 
