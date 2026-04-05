@@ -217,41 +217,25 @@ const upload = multer({ storage: multer.memoryStorage() });
  });
 
  
- app.post("/api/upload", upload.single("video"), async (req, res) => {
+ app.post("/api/save-video", async (req, res) => {
   try {
-    console.log("FILE RECEIVED:", req.file);
+    const { url, username, caption } = req.body;
 
-    if (!req.file) {
-      return res.status(400).json({ error: "File not received" });
+    if (!url) {
+      return res.status(400).json({ error: "No URL" });
     }
 
-    // 🔥 upload via stream
-    const result = await new Promise((resolve, reject) => {
-      const stream = cloudinary.uploader.upload_stream(
-        {
-          resource_type: "video",
-          folder: "bmreels"
-        },
-        (error, result) => {
-          if (error) return reject(error);
-          resolve(result);
-        }
-      );
-
-      streamifier.createReadStream(req.file.buffer).pipe(stream);
-    });
-
     await Video.create({
-      url: result.secure_url,
-      username: req.body.username,
-      caption: req.body.caption,
-      userId: req.body.username
+      url,
+      username,
+      caption,
+      userId: username
     });
 
     res.json({ success: true });
 
   } catch (err) {
-    console.log("UPLOAD ERROR FINAL:", err);
+    console.log("SAVE ERROR:", err);
     res.status(500).json({ error: err.message });
   }
 });

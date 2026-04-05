@@ -88,7 +88,7 @@ async function loadVideos() {
     // ❌ BUG FIX: extra ; हटाया गया
     div.innerHTML = `
       
-    <video src="${video.url || video.videoUrl}" loop muted playsinline></video>
+    <video src="${video.url}" loop muted playsinline preload="metadata"></video>
       
       <div class="centerHeart">❤️</div>
   
@@ -496,36 +496,42 @@ if (uploadBtn) {
       return;
     }
 
-    const formData = new FormData();
-    formData.append("video", file);
-    formData.append("caption", captionInput.value);
-    formData.append("username", currentUser);
-
     try {
-      const res = await fetch(`${BASE_URL}/api/upload`, {
+
+      // 🔥 STEP 1 — Cloudinary upload
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", "bmreels_preset");
+
+      const cloudRes = await fetch("https://api.cloudinary.com/v1_1/dzbzbljod/video/upload", {
         method: "POST",
         body: formData
       });
 
-      // ❗ पहले text check (server error पकड़ने के लिए)
-      const text = await res.text();
-      console.log("RAW RESPONSE:", text);
+      const cloudData = await cloudRes.json();
+      console.log("CLOUD:", cloudData);
 
-      let isSuccess = false;
-
-      try {
-        const data = JSON.parse(text);
-        console.log("UPLOAD SUCCESS:", data);
-
-        if (data.success) {
-          isSuccess = true;
-        }
-
-      } catch (e) {
-        console.log("NOT JSON RESPONSE");
+      if (!cloudData.secure_url) {
+        alert("Upload failed");
+        return;
       }
 
-      if (isSuccess) {
+      // 🔥 STEP 2 — DB save
+      const res = await fetch(`${BASE_URL}/api/save-video`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          url: cloudData.secure_url,
+          caption: captionInput.value,
+          username: currentUser
+        })
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
 
         uploadBox.classList.remove("show");
 
@@ -533,11 +539,9 @@ if (uploadBtn) {
         videoPreview.src = "";
         videoPreview.style.display = "none";
         captionInput.value = "";
-        usernameInput.value = "";
 
         offset = 0;
 
-        // ❗ container safety
         const container = document.getElementById("reelsContainer");
         if (container) {
           container.innerHTML = "";
@@ -552,7 +556,7 @@ if (uploadBtn) {
 
   });
 
-} // ✅ uploadBtn block close
+}
 
 // ================= INFINITE SCROLL =================
 const container = document.getElementById("reelsContainer");
