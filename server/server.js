@@ -143,13 +143,15 @@ app.get("/api/videos", async (req, res) => {
 
  const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
-  params: {
-    resource_type: "video",
-    folder: "bmreels"
+  params: async (req, file) => {
+    return {
+      folder: "bmreels",
+      resource_type: "video"
+    };
   }
- });
+});
 
- const upload = multer({ storage });
+const upload = multer({ storage });
 
 // get likes
  app.get("/api/likes", (req, res) => {
@@ -215,7 +217,7 @@ app.get("/api/videos", async (req, res) => {
 
  app.post("/api/upload", upload.single("video"), async (req, res) => {
   try {
-    console.log("FILE:", req.file);
+    console.log("FILE RECEIVED:", req.file);
 
     if (!req.file) {
       return res.status(400).json({ error: "File not received" });
