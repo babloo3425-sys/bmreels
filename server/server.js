@@ -22,8 +22,8 @@ app.use(cors());
 
  cloudinary.config({
   cloud_name: "dzbzbljod",
-  api_key: "841846866177438",
-  api_secret: "xOtiPO18An2gpd3Ep8CZylvI2dU"
+  api_key: "681591956146547",
+  api_secret: "pPr2mcxwmCvfmH15Bl3SWi_MMvI"
 });
 
 console.log("CLOUD:", process.env.CLOUDINARY_CLOUD_NAME);
