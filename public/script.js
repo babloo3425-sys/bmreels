@@ -292,16 +292,20 @@ let liked = false;
 videoEl.addEventListener("dblclick", () => {
   if (!heart) return;
 
+  // ❤️ animation (same as before)
   heart.classList.remove("show");
   void heart.offsetWidth;
   heart.classList.add("show");
 
-  // ❌ पहले global setTimeout था → यहाँ move किया (per video)
   setTimeout(() => {
     heart.classList.remove("show");
   }, 600);
-});
 
+  // 🔥 NEW: like trigger (IMPORTANT)
+  if (!liked) {
+    likeBtn.click(); // ✅ existing like logic use करेगा
+  }
+});
 // ❌ REMOVE किया (ये गलत था)
 // if (!liked) {
 //   likeBtn.dispatchEvent(new Event("click"));
