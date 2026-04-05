@@ -7,6 +7,7 @@
  const app = express();
  const cloudinary = require("cloudinary").v2;
  const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const streamifier = require("streamifier");
 
 app.use(cors());
  app.use(express.json());
@@ -151,7 +152,7 @@ app.get("/api/videos", async (req, res) => {
   }
 });
 
-const upload = multer({ dest: "uploads/" }); // ✅ temp storage
+const upload = multer({ storage: multer.memoryStorage() });
 
 // get likes
  app.get("/api/likes", (req, res) => {
@@ -216,7 +217,7 @@ const upload = multer({ dest: "uploads/" }); // ✅ temp storage
  });
 
  
-app.post("/api/upload", upload.single("video"), async (req, res) => {
+ app.post("/api/upload", upload.single("video"), async (req, res) => {
   try {
     console.log("FILE RECEIVED:", req.file);
 
@@ -224,17 +225,24 @@ app.post("/api/upload", upload.single("video"), async (req, res) => {
       return res.status(400).json({ error: "File not received" });
     }
 
-    // 🔥 direct upload to cloudinary
-    const result = await cloudinary.uploader.upload(req.file.path, {
-      resource_type: "video",
-      folder: "bmreels"
+    // 🔥 upload via stream
+    const result = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        {
+          resource_type: "video",
+          folder: "bmreels"
+        },
+        (error, result) => {
+          if (error) return reject(error);
+          resolve(result);
+        }
+      );
+
+      streamifier.createReadStream(req.file.buffer).pipe(stream);
     });
 
-    // temp file delete
-    fs.unlinkSync(req.file.path);
-
     await Video.create({
-      url: result.secure_url, // ✅ final URL
+      url: result.secure_url,
       username: req.body.username,
       caption: req.body.caption,
       userId: req.body.username
@@ -243,13 +251,9 @@ app.post("/api/upload", upload.single("video"), async (req, res) => {
     res.json({ success: true });
 
   } catch (err) {
-  console.log("UPLOAD ERROR FULL:", err); // 🔥 full error print
-
-  res.status(500).json({
-    error: err.message,     // 🔥 actual error
-    details: err            // 🔥 full object (debug)
-  });
-}
+    console.log("UPLOAD ERROR FINAL:", err);
+    res.status(500).json({ error: err.message });
+  }
 });
  // ================= PROFILE ROUTE =================
 
