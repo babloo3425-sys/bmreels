@@ -5,6 +5,7 @@
  const multer = require("multer");
  const mongoose = require("mongoose");
  const app = express();
+ const cloudinary = require("cloudinary").v2;
 
  app.use(cors());
  app.use(express.json());
@@ -17,8 +18,15 @@
   next();
  });
 
- require("dotenv").config();
- mongoose.connect(process.env.MONGO_URI || "mongodb+srv://bblkumar8_db_user:BBlk1973MMkrSH@cluster0.baicjxm.mongodb.net/?retryWrites=true&w=majority")
+
+ cloudinary.config({
+  cloud_name: "dzbzbljod",
+  api_key: "841846866177438",
+  api_secret: "xOtiPO18An2gpd3Ep8CZylvI2dU"
+});
+
+  require("dotenv").config();
+  mongoose.connect(process.env.MONGO_URI || "mongodb+srv://bblkumar8_db_user:BBlk1973MMkrSH@cluster0.baicjxm.mongodb.net/?retryWrites=true&w=majority")
   .then(() => console.log("MongoDB connected"))
   .catch(err => console.log("Mongo Error:", err));
 
@@ -128,20 +136,19 @@ app.get("/api/videos", async (req, res) => {
   fs.mkdirSync(uploadPath, { recursive: true });
  }
 
- const storage = multer.diskStorage({
-  
-  destination: (req, file, cb) => {
-    cb(null, uploadPath);
-  },
-  
-  filename: (req, file, cb) => {
-    cb(null, Date.now() + path.extname(file.originalname));
+ const { CloudinaryStorage } = require("multer-storage-cloudinary");
+
+ const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    resource_type: "video",
+    folder: "bmreels"
   }
  });
 
  const upload = multer({ storage });
 
- // get likes
+// get likes
  app.get("/api/likes", (req, res) => {
   res.json(likesData);
  });
@@ -211,7 +218,7 @@ app.get("/api/videos", async (req, res) => {
       return res.status(400).json({ error: "File not received" });
     }
 
-    const fileUrl = `/videos/${req.file.filename}`;
+    const fileUrl = req.file.path;
     const { caption, username } = req.body;
 
     await Video.create({
