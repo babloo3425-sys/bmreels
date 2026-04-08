@@ -376,3 +376,8 @@ body {
 .hide {
   display: none !important;
 }
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+}
