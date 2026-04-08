@@ -224,11 +224,11 @@ body {
   padding: 8px;
 }
 
-/* plus button */
+/* plus button FIXED */
 #openUpload {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  bottom: 90px;   /* 🔥 20px → 90px (यही main fix है) */
+  right: 15px;    /* थोड़ा अंदर लाया */
   font-size: 28px;
   background: black;
   color: white;
@@ -239,27 +239,41 @@ body {
   z-index: 1000;
 }
 
-/* upload box */
+#openUpload {
+  position: fixed;
+  bottom: calc(70px + env(safe-area-inset-bottom));
+  right: 15px;
+}
+
+/* upload box FIX */
 #uploadBox {
   position: fixed;
   bottom: -100%;
   left: 0;
-  width: 93%;
+  width: 100%;              /* 🔥 full width */
+  max-height: 60vh;         /* mobile me control */
   background: #111;
-  padding: 15px;
+  padding: 12px;
   transition: 0.3s;
   z-index: 1001;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
+  box-sizing: border-box;   /* important */
 }
 
 #uploadBox.show {
-  bottom: 0;
+  bottom: env(safe-area-inset-bottom);  /* 🔥 mobile safe */
 }
 
 #uploadBox input {
-  padding: 8px;
+  padding: 6px;
+  font-size: 13px;
+}
+
+#uploadBox input[type="file"] {
+  font-size: 12px;
+  width: 180px;   /* 🔥 छोटा */
 }
 
 #previewControls {
