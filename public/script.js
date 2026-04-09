@@ -599,13 +599,15 @@ if (container) {
   });
 }
 
-// Video click play/pause (BOTTOM में)
-document.querySelectorAll("video").forEach(video => {
-  video.addEventListener("click", () => {
-    if (video.paused) {
-      video.play();
-    } else {
-      video.pause();
-    }
+// Video click play/pause 
+document.addEventListener("DOMContentLoaded", () => {
+  document.querySelectorAll("video").forEach(video => {
+    video.addEventListener("click", () => {
+      if (video.paused) {
+        video.play();
+      } else {
+        video.pause();
+      }
+    });
   });
 });
