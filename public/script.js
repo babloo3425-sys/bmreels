@@ -585,6 +585,19 @@ if (videoUpload) {
   });
 }
 
+// Video click play/pause
+document.querySelectorAll("video").forEach(video => {
+
+  video.addEventListener("click", () => {
+    if (video.paused) {
+      video.play();
+    } else {
+      video.pause();
+    }
+  });
+
+});
+
 // ================= INFINITE SCROLL =================
 const container = document.getElementById("reelsContainer");
 
