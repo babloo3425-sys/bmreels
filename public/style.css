@@ -258,11 +258,11 @@ body {
 }
 
 #uploadBox.show {
-  bottom: 0;
+  bottom: env(safe-area-inset-bottom);  /* 🔥 यही सही fix */
 }
 
 #uploadBox input {
-  padding: 0px;
+  padding: 5px;
 }
 
 #previewControls {
