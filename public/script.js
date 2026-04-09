@@ -88,7 +88,7 @@ async function loadVideos() {
     // ❌ BUG FIX: extra ; हटाया गया
     div.innerHTML = `
       
-    <video src="${video.url}" loop muted playsinline preload="metadata"></video>
+    <video src="${video.url}" autoplay loop muted playsinline preload="metadata"></video>
       
       <div class="centerHeart">❤️</div>
   
@@ -600,14 +600,16 @@ if (container) {
 }
 
 // Video click play/pause 
-document.addEventListener("DOMContentLoaded", () => {
-  document.querySelectorAll("video").forEach(video => {
-    video.addEventListener("click", () => {
-      if (video.paused) {
-        video.play();
-      } else {
-        video.pause();
-      }
-    });
-  });
+document.addEventListener("click", function(e) {
+
+  if (e.target.tagName === "VIDEO") {
+    let video = e.target;
+
+    if (video.paused) {
+      video.play().catch(() => {});
+    } else {
+      video.pause();
+    }
+  }
+
 });
