@@ -585,19 +585,6 @@ if (videoUpload) {
   });
 }
 
-// Video click play/pause
-document.querySelectorAll("video").forEach(video => {
-
-  video.addEventListener("click", () => {
-    if (video.paused) {
-      video.play();
-    } else {
-      video.pause();
-    }
-  });
-
-});
-
 // ================= INFINITE SCROLL =================
 const container = document.getElementById("reelsContainer");
 
@@ -611,3 +598,14 @@ if (container) {
     }
   });
 }
+
+// Video click play/pause (BOTTOM में)
+document.querySelectorAll("video").forEach(video => {
+  video.addEventListener("click", () => {
+    if (video.paused) {
+      video.play();
+    } else {
+      video.pause();
+    }
+  });
+});
