@@ -53,7 +53,7 @@ document.addEventListener("DOMContentLoaded", () => {
 async function loadVideos() {
   if (isLoading) return;
   isLoading = true;
-
+}
   const res = await fetch(`${BASE_URL}/api/videos?offset=${offset}`);
   const data = await res.json();
 
@@ -67,28 +67,32 @@ async function loadVideos() {
   const likesData = await likesRes.json();
 
   const container = document.getElementById("reelsContainer");
+  const PEXELS_API_KEY = "5PIXPLLMZL8N0vDiYeA2bGX7FBvAVMK1Phw0sPODmzRGMkx0XQWCVe4K";
 
-  if (!data.data || data.data.length === 0) {
-  console.log("No more videos");
-  isLoading = false;
-  return;
-}
-  data.data.forEach(video => {
-    console.log("VIDEO USER:", video.username);
-    console.log("DP KEY:", "dp_" + video.username);
+ if (!data.data || data.data.length === 0) {
+  console.log("No user videos → loading Pexels");
 
-    const cleanUsername = video.username.replace("@", "").trim();
+  const pexelsRes = await fetch("https://api.pexels.com/videos/popular?per_page=10", {
+    headers: {
+      Authorization: PEXELS_API_KEY
+    }
+  });
+
+  const pexelsData = await pexelsRes.json();
+
+  pexelsData.videos.forEach(video => {
+
+    const file = video.video_files.find(f => f.quality === "sd") || video.video_files[0];
+
     const div = document.createElement("div");
     div.className = "reel";
 
-   // 🔥 FINAL FIX
     div.style.display = "block";
     div.style.height = "100vh";
 
-    // ❌ BUG FIX: extra ; हटाया गया
     div.innerHTML = `
+      <video src="${file.link}" autoplay loop muted playsinline preload="metadata"></video>
       
-    <video src="${video.url}" autoplay loop muted playsinline preload="metadata"></video>
       
       <div class="centerHeart">❤️</div>
   
@@ -586,7 +590,6 @@ if (videoUpload) {
 }
 
 // ================= INFINITE SCROLL =================
-const container = document.getElementById("reelsContainer");
 
 if (container) {
   container.addEventListener("scroll", () => {
