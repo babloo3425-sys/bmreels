@@ -386,3 +386,7 @@ body {
   right: 10px;
   bottom: calc(120px + env(safe-area-inset-bottom)); /* 🔥 यही fix */
 }
+
+.header {
+  margin-top: env(safe-area-inset-top);
+}
