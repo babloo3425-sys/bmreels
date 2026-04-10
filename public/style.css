@@ -52,7 +52,7 @@ body {
 .actions {
   position: absolute;
   right: 10px;
-  bottom: 100px;
+  bottom: calc(100px + env(safe-area-inset-bottom));
   top: 50%;               /* 👈 center align */
   transform: translateY(-50%);
   display: flex;
@@ -378,15 +378,5 @@ body {
 
 body {
   margin: 0;
-  overflow-x: hidden;
-}
-
-.reelActions {
-  position: absolute;
-  right: 10px;
-  bottom: calc(120px + env(safe-area-inset-bottom)); /* 🔥 यही fix */
-}
-
-.header {
-  margin-top: env(safe-area-inset-top);
+  padding-top: 0;
 }
