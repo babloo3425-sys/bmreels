@@ -397,34 +397,3 @@ body {
     background: black;
   }
 }
-
-/* 🔥 PROFILE HEADER FIX */
-.profileHeader {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
-/* 🔥 MAIN FIX */
-.profilePic {
-  width: 90px;
-  height: 90px;
-  min-width: 90px;     /* 🔥 important */
-  min-height: 90px;
-  flex-shrink: 0;      /* 🔥 root fix */
-  border-radius: 50%;
-  object-fit: cover;
-  cursor: pointer;
-}
-
-/* 🔥 FULL TOP COVER */
-html, body {
-  margin: 0;
-  padding: 0;
-  background: black;
-}
-
-/* 🔥 SAFE AREA FIX */
-body {
-  padding-top: env(safe-area-inset-top);
-}
