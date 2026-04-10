@@ -416,3 +416,15 @@ body {
   object-fit: cover;
   cursor: pointer;
 }
+
+/* 🔥 FULL TOP COVER */
+html, body {
+  margin: 0;
+  padding: 0;
+  background: black;
+}
+
+/* 🔥 SAFE AREA FIX */
+body {
+  padding-top: env(safe-area-inset-top);
+}
