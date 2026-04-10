@@ -403,3 +403,18 @@ body {
     background: black;
   }
 }
+
+/* 🔥 DP FIX (mobile + web safe) */
+.userRow {
+  display: flex;
+  align-items: center;
+}
+
+.userRow img,
+.avatar {
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;   /* 🔥 MAIN FIX */
+  border-radius: 50%;
+  object-fit: cover;
+}
