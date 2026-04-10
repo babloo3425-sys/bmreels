@@ -403,22 +403,3 @@ body {
     background: black;
   }
 }
-
-/* 🔥 ONLY MOBILE FIX */
-@media (max-width: 768px) {
-  .userRow img,
-  .avatar {
-    width: 50px !important;
-    height: 50px !important;
-    min-width: 50px;
-    min-height: 50px;
-    border-radius: 50%;
-    object-fit: cover;
-  }
-
-  .userRow {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-}
