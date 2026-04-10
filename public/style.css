@@ -404,19 +404,21 @@ body {
   }
 }
 
-/* 🔥 USER DP FIX */
-.userRow img,
-.avatar {
-  width: 50px;
-  height: 50px;
-  min-width: 50px;   /* 🔥 mobile shrink रोकेगा */
-  min-height: 50px;
-  border-radius: 50%;
-  object-fit: cover;
-}
+/* 🔥 ONLY MOBILE FIX */
+@media (max-width: 768px) {
+  .userRow img,
+  .avatar {
+    width: 50px !important;
+    height: 50px !important;
+    min-width: 50px;
+    min-height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
 
-.userRow {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  .userRow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
 }
