@@ -414,3 +414,9 @@ body {
   border-radius: 50%;
   object-fit: cover;
 }
+
+.userRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
