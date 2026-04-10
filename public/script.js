@@ -124,8 +124,13 @@ async function loadVideos() {
         <button class="muteBtn">🔇</button>
    
         <div class="actionItem deleteBtn">
-          🗑️
-        </div>
+  <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="white" stroke-width="2">
+    <path d="M3 6h18"/>
+    <path d="M8 6V4h8v2"/>
+    <rect x="5" y="6" width="14" height="14" rx="2"/>
+    <path d="M10 11v6M14 11v6"/>
+  </svg>
+</div>
 
         <div class="actionItem shareBtn">
           <svg viewBox="0 0 24 24" width="28" height="28" fill="white">
