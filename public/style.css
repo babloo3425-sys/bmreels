@@ -404,17 +404,13 @@ body {
   }
 }
 
-/* 🔥 DP FIX (mobile + web safe) */
-.userRow {
-  display: flex;
-  align-items: center;
-}
-
-.userRow img,
-.avatar {
-  width: 50px;
-  height: 50px;
-  flex-shrink: 0;   /* 🔥 MAIN FIX */
+/* 🔥 USER PAGE DP FIX (FINAL) */
+.info .userRow img {
+  width: 50px !important;
+  height: 50px !important;
+  min-width: 50px;
+  min-height: 50px;
   border-radius: 50%;
   object-fit: cover;
+  flex-shrink: 0;
 }
