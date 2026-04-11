@@ -398,6 +398,7 @@ body {
   }
 }
 
+/* 🔥 preview video */
 #videoPreview {
   position: fixed;
   bottom: 120px;
@@ -409,4 +410,20 @@ body {
   border-radius: 10px;
   object-fit: cover;
   z-index: 1000;
+}
+
+/* 🔥 ❌ corner button */
+#closePreview {
+  position: fixed;
+  bottom: 370px;   /* preview के top corner */
+  left: calc(50% + 70px); /* right corner adjust */
+  background: rgba(0,0,0,0.7);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  font-size: 14px;
+  z-index: 1001;
+  display: none;
 }
