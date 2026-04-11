@@ -343,16 +343,32 @@ body {
   margin: 0;
 }
 
+/* 🔥 USER VIDEO GRID FIX */
 .videoGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  gap: 8px;
   padding: 10px;
 }
 
+/* 🔥 हर video box same size */
 .videoGrid video {
   width: 100%;
+  height: 160px;
+  object-fit: cover;
   border-radius: 10px;
+}
+
+/* 🔥 mobile responsive */
+@media (max-width: 768px) {
+  .videoGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  .videoGrid video {
+    height: 120px;
+  }
 }
 
 .profilePic {
