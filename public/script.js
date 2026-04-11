@@ -516,6 +516,15 @@ if (videoUpload) {
       return;
     }
 
+   // 🔥 COMPRESS FIRST
+let finalFile = file;
+
+try {
+  finalFile = await compressVideo(file);
+} catch (e) {
+  console.log("Compression failed, using original file");
+}
+    
     // ✅ PREVIEW
     const url = URL.createObjectURL(file);
     videoPreview.src = url;
@@ -531,7 +540,7 @@ if (videoUpload) {
    try {
       // 🔥 Cloudinary upload
       const formData = new FormData();
-      formData.append("file", file);
+      formData.append("file", finalFile);   // 🔥 compressed file
       formData.append("upload_preset", "bmreels_preset");
 
       const res = await fetch("https://api.cloudinary.com/v1_1/dzbzbljod/video/upload", {
@@ -628,3 +637,28 @@ document.addEventListener("click", function(e) {
   }
 
 });
+
+// 🔥 FFmpeg init (once)
+const { createFFmpeg, fetchFile } = FFmpeg;
+const ffmpeg = createFFmpeg({ log: false });
+
+async function compressVideo(file) {
+  if (!ffmpeg.isLoaded()) {
+    await ffmpeg.load();
+  }
+
+  // input write
+  ffmpeg.FS('writeFile', 'input.mp4', await fetchFile(file));
+
+  // 🔥 compress (720p, fast)
+  await ffmpeg.run(
+    '-i', 'input.mp4',
+    '-vf', 'scale=720:-2',
+    '-preset', 'ultrafast',
+    '-crf', '28',
+    'output.mp4'
+  );
+
+  const data = ffmpeg.FS('readFile', 'output.mp4');
+  return new File([data.buffer], 'compressed.mp4', { type: 'video/mp4' });
+}
