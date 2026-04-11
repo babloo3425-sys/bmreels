@@ -371,12 +371,14 @@ body {
   }
 }
 
+/* 🔥 DP size increase */
 .profilePic {
-  width: 90px;
-  height: 90px;
+  width: 120px;   /* पहले 90px था */
+  height: 120px;
+  min-width: 120px;
+  min-height: 120px;
   border-radius: 50%;
   object-fit: cover;
-  cursor: pointer;
 }
 
 .hide {
