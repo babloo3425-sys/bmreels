@@ -397,3 +397,16 @@ body {
     background: black;
   }
 }
+
+#videoPreview {
+  position: fixed;
+  bottom: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 180px;
+  height: 260px;
+  background: black;
+  border-radius: 10px;
+  object-fit: cover;
+  z-index: 1000;
+}
