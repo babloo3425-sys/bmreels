@@ -488,10 +488,12 @@ if (commentPost) {
 const videoUpload = document.getElementById("videoUpload");
 const captionInput = document.getElementById("captionInput");
 const usernameInput = document.getElementById("usernameInput");
+const wrapper = document.getElementById("previewWrapper");
 
 const openUpload = document.getElementById("openUpload");
 const uploadBox = document.getElementById("uploadBox");
 const videoPreview = document.getElementById("videoPreview");
+const closeBtn = document.getElementById("closePreview");
 const uploadBtn = document.getElementById("uploadBtn");
 
 // ❗ safety check
@@ -517,9 +519,16 @@ if (videoUpload) {
     // ✅ PREVIEW
     const url = URL.createObjectURL(file);
     videoPreview.src = url;
+    
+    wrapper.style.display = "block";
     videoPreview.style.display = "block";
 
-    try {
+    closeBtn.addEventListener("click", () => {
+    wrapper.style.display = "none";
+    videoPreview.src = "";
+   });
+
+   try {
       // 🔥 Cloudinary upload
       const formData = new FormData();
       formData.append("file", file);
