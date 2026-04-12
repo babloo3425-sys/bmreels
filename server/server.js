@@ -2,12 +2,12 @@
  const cors = require("cors");
  const path = require("path");
  const fs = require("fs");
- const multer = require("multer");
  const mongoose = require("mongoose");
  const app = express();
  const cloudinary = require("cloudinary").v2;
  const { CloudinaryStorage } = require("multer-storage-cloudinary");
-const streamifier = require("streamifier");
+ const multer = require("multer");
+ const streamifier = require("streamifier");
 
 app.use(cors());
  app.use(express.json());
@@ -142,17 +142,16 @@ app.get("/api/videos", async (req, res) => {
   fs.mkdirSync(uploadPath, { recursive: true });
  }
 
- const storage = new CloudinaryStorage({
+ // 🔥 storage
+const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
-  params: async (req, file) => {
-    return {
-      folder: "bmreels",
-      resource_type: "video"
-    };
-  }
+  params: async (req, file) => ({
+    folder: "bmreels",
+    resource_type: "video"
+  })
 });
-
-const upload = multer({ storage: multer.memoryStorage() });
+// 🔥 upload
+const upload = multer({ storage });  
 
 // get likes
  app.get("/api/likes", (req, res) => {

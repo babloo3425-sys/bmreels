@@ -576,20 +576,24 @@ if (videoUpload) {
       videoPreview.style.display = "none";
       videoPreview.src = "";
 
-      if (captionInput) captionInput.value = "";
-      if (usernameInput) usernameInput.value = "";
+      // 🔥 MAIN FIX
+     if (wrapper) wrapper.style.display = "none";
+     if (closeBtn) closeBtn.style.display = "none";
 
-      if (uploadBox) uploadBox.classList.remove("show");
+     if (captionInput) captionInput.value = "";
+     if (usernameInput) usernameInput.value = "";
 
-      // 🔥 reload reels
-      offset = 0;
+     if (uploadBox) uploadBox.classList.remove("show");
 
-      const container = document.getElementById("reelsContainer");
-      if (container) {
-        container.innerHTML = "";
-      }
+     // 🔥 reload reels
+     offset = 0;
 
-      await loadVideos();
+     const container = document.getElementById("reelsContainer");
+     if (container) {
+     container.innerHTML = "";
+     }
+
+    await loadVideos();
 
     } catch (err) {
       console.log("UPLOAD ERROR:", err);
