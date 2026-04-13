@@ -584,7 +584,7 @@ if (videoUpload) {
      if (uploadBox) uploadBox.classList.remove("show");
 
      // 🔥 instant video add
-      const container = document.getElementById("reelsContainer");
+    const container = document.getElementById("reelsContainer");
 
      if (container) {
      const div = document.createElement("div");
@@ -598,6 +598,11 @@ if (videoUpload) {
    `;
 
     container.prepend(div);
+   }
+    // 🔥 sidebar तुरंत दिखाओ
+   const sidebarBtn = document.getElementById("openUpload");
+   if (sidebarBtn) {
+   sidebarBtn.style.display = "block";
    }
 
     } catch (err) {
