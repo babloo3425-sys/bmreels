@@ -583,27 +583,15 @@ if (videoUpload) {
 
      if (uploadBox) uploadBox.classList.remove("show");
 
-     // 🔥 instant video add
-    const container = document.getElementById("reelsContainer");
+     // 🔥 reload reels
+     offset = 0;
 
+     const container = document.getElementById("reelsContainer");
      if (container) {
-     const div = document.createElement("div");
-     div.className = "reel";
+     container.innerHTML = "";
+     }
 
-     div.style.display = "block";
-     div.style.height = "100vh";
-
-    div.innerHTML = `
-    <video src="${data.secure_url}" autoplay loop muted playsinline preload="metadata"></video>
-   `;
-
-    container.prepend(div);
-   }
-    // 🔥 sidebar तुरंत दिखाओ
-   const sidebarBtn = document.getElementById("openUpload");
-   if (sidebarBtn) {
-   sidebarBtn.style.display = "block";
-   }
+    await loadVideos();
 
     } catch (err) {
       console.log("UPLOAD ERROR:", err);
