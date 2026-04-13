@@ -67,8 +67,6 @@ async function loadVideos() {
   const likesData = await likesRes.json();
 
   const container = document.getElementById("reelsContainer");
-  const PEXELS_API_KEY = "5PIXPLLMZL8N0vDiYeA2bGX7FBvAVMK1Phw0sPODmzRGMkx0XQWCVe4K";
-
   if (!data.data || data.data.length === 0) {
   console.log("No more videos");
   isLoading = false;
@@ -585,15 +583,22 @@ if (videoUpload) {
 
      if (uploadBox) uploadBox.classList.remove("show");
 
-     // 🔥 reload reels
-     offset = 0;
+     // 🔥 instant video add
+      const container = document.getElementById("reelsContainer");
 
-     const container = document.getElementById("reelsContainer");
      if (container) {
-     container.innerHTML = "";
-     }
+     const div = document.createElement("div");
+     div.className = "reel";
 
-    await loadVideos();
+     div.style.display = "block";
+     div.style.height = "100vh";
+
+    div.innerHTML = `
+    <video src="${data.secure_url}" autoplay loop muted playsinline preload="metadata"></video>
+   `;
+
+    container.prepend(div);
+   }
 
     } catch (err) {
       console.log("UPLOAD ERROR:", err);
