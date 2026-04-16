@@ -152,9 +152,7 @@ async function loadVideos() {
       </div>
     `;
 
-    container.prepend(div);   // 🔥 तुरंत दिखेगा
-   
-    const avatar = div.querySelector(".avatar");
+const avatar = div.querySelector(".avatar");
 
 // ================= DP CACHE =================
 // ✅ cache check
@@ -598,16 +596,24 @@ if (videoUpload) {
 
      if (uploadBox) uploadBox.classList.remove("show");
 
-     // 🔥 reload reels
-     offset = 0;
-
+     // 🔥 instant add (FINAL FIX)
      const container = document.getElementById("reelsContainer");
+
      if (container) {
-     container.innerHTML = "";
-     }
+     const cleanUsername = currentUser.replace("@", "").trim();
 
-    await loadVideos();
+    const div = document.createElement("div");
+    div.className = "reel";
 
+    div.style.display = "block";
+    div.style.height = "100vh";
+
+    div.innerHTML = `
+    <video src="${data.secure_url}" autoplay loop muted playsinline preload="metadata"></video>
+   `;
+
+   container.prepend(div);   // 🔥 तुरंत दिखेगा
+  }
     } catch (err) {
       console.log("UPLOAD ERROR:", err);
       alert("Upload error, try again");
