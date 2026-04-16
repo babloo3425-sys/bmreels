@@ -665,6 +665,14 @@ if (licenceBtn) {
   };
 }
 
+// 🔒 Privacy
+const privacyBtn = document.getElementById("privacyBtn");
+if (privacyBtn) {
+  privacyBtn.onclick = () => {
+    window.location.href = "privacy.html";
+  };
+}
+
 // 🔥 Logout
 const logoutBtn = document.getElementById("logoutBtn");
 if (logoutBtn) {
