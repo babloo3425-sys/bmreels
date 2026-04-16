@@ -631,3 +631,45 @@ document.addEventListener("click", function(e) {
 
 });
 
+const menuBtn = document.getElementById("menuBtn");
+const menuBox = document.getElementById("menuBox");
+
+if (menuBtn) {
+  menuBtn.addEventListener("click", () => {
+    menuBox.style.display =
+      menuBox.style.display === "block" ? "none" : "block";
+  });
+}
+
+// 🔔 Notifications
+const notifBtn = document.getElementById("notifBtn");
+if (notifBtn) {
+  notifBtn.onclick = () => {
+    window.location.href = "notifications.html";
+  };
+}
+
+// 📜 Terms
+const termsBtn = document.getElementById("termsBtn");
+if (termsBtn) {
+  termsBtn.onclick = () => {
+    window.location.href = "terms.html";
+  };
+}
+
+// 📄 Licence
+const licenceBtn = document.getElementById("licenceBtn");
+if (licenceBtn) {
+  licenceBtn.onclick = () => {
+    window.location.href = "licence.html";
+  };
+}
+
+// 🔥 Logout
+const logoutBtn = document.getElementById("logoutBtn");
+if (logoutBtn) {
+  logoutBtn.onclick = () => {
+    localStorage.removeItem("username");
+    window.location.href = "index.html";
+  };
+}
