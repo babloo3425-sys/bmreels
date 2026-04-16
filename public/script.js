@@ -614,7 +614,12 @@ if (videoUpload) {
 
    container.prepend(div);   // 🔥 तुरंत दिखेगा
   }
-    } catch (err) {
+  // 🔥 ADD THIS (MAIN FIX)
+  if (typeof setupScrollVideo === "function") {
+  setupScrollVideo();
+}
+
+} catch (err) {
       console.log("UPLOAD ERROR:", err);
       alert("Upload error, try again");
       videoPreview.style.display = "none";
