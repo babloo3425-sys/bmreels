@@ -596,30 +596,17 @@ if (videoUpload) {
 
      if (uploadBox) uploadBox.classList.remove("show");
 
-     // 🔥 instant add (FINAL FIX)
+     // 🔥 reload reels
+     offset = 0;
+
      const container = document.getElementById("reelsContainer");
-
      if (container) {
-     const cleanUsername = currentUser.replace("@", "").trim();
+     container.innerHTML = "";
+     }
 
-    const div = document.createElement("div");
-    div.className = "reel";
+    await loadVideos();
 
-    div.style.display = "block";
-    div.style.height = "100vh";
-
-    div.innerHTML = `
-    <video src="${data.secure_url}" autoplay loop muted playsinline preload="metadata"></video>
-   `;
-
-   container.prepend(div);   // 🔥 तुरंत दिखेगा
-  }
-  // 🔥 ADD THIS (MAIN FIX)
-  if (typeof setupScrollVideo === "function") {
-  setupScrollVideo();
-}
-
-} catch (err) {
+    } catch (err) {
       console.log("UPLOAD ERROR:", err);
       alert("Upload error, try again");
       videoPreview.style.display = "none";
