@@ -18,37 +18,50 @@ document.addEventListener("DOMContentLoaded", () => {
   const loginInput = document.getElementById("loginInput");
   const loginBox = document.getElementById("loginBox");
 
-  // ✅ AUTO LOGIN
-  const savedUser = localStorage.getItem("bm_user");
+ // ✅ AUTO LOGIN
+const savedUser = localStorage.getItem("bm_user");
 
-  if (savedUser) {
-    currentUser = savedUser;
+if (savedUser) {
+  currentUser = savedUser;
+  loginBox.classList.add("hide");
+}
+
+// ✅ LOGIN CLICK
+if (loginBtn) {
+  loginBtn.addEventListener("click", () => {
+
+    const val = loginInput.value.trim();
+
+    if (!val) {
+      alert("Enter username");
+      return;
+    }
+
+    localStorage.setItem("bm_user", val);
+    currentUser = val;
+
+    console.log("LOGIN SAVED:", val);
+
     loginBox.classList.add("hide");
-  }
+    window.location.reload();
+  });
+}
 
-  // ✅ LOGIN CLICK
-  if (loginBtn) {
-    loginBtn.addEventListener("click", () => {
+// 🔥 LOGOUT (ADD HERE)
+const logoutBtn = document.getElementById("logoutBtn");
 
-      const val = loginInput.value.trim();
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", () => {
 
-      if (!val) {
-        alert("Enter username");
-        return;
-      }
+    localStorage.removeItem("bm_user");   // 🔥 same key
+    currentUser = null;
 
-      localStorage.setItem("bm_user", val);
-      currentUser = val;
-
-      console.log("LOGIN SAVED:", val);
-
-      loginBox.classList.add("hide");
-      window.location.reload();
-    });
-  }
-
+    window.location.reload();
+  });
+ 
+ }
+ 
 });
-
 // ================= LOAD VIDEOS =================
 async function loadVideos() {
   if (isLoading) return;
