@@ -152,7 +152,9 @@ async function loadVideos() {
       </div>
     `;
 
-const avatar = div.querySelector(".avatar");
+    container.prepend(div)
+   
+    const avatar = div.querySelector(".avatar");
 
 // ================= DP CACHE =================
 // ✅ cache check
