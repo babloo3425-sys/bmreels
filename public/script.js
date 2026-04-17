@@ -116,12 +116,6 @@ if (currentUser) {
     console.log("USER LIKES ERROR:", err);
   }
 }
-    const resC = await fetch(`${BASE_URL}/api/comments`);
-    const commentsDataFromServer = await resC.json();
-    commentsData = commentsDataFromServer;
-
-    const likesRes = await fetch(`${BASE_URL}/api/likes`);
-    const likesData = await likesRes.json();
 
     const container = document.getElementById("reelsContainer");
 
