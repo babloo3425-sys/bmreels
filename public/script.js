@@ -259,10 +259,8 @@
         } catch (err) {
           console.log("DELETE ERROR:", err);
         }
-      });
 
-      // ================= APPEND =================
-      container.appendChild(div);
+      });
 
     });
 
