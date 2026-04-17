@@ -355,7 +355,7 @@ if (currentUser) {
    // ================= LIKE SYSTEM =================
 
    // BM FIX: better selector (target only like svg)
-   const likeBtn = div.querySelector(".actionItem svg");
+   const likeBtn = div.querySelector(".actionItem:first-child svg");
    const likeCount = likeBtn?.parentElement?.querySelector("span");
 
    const heart = div.querySelector(".centerHeart");
@@ -419,6 +419,18 @@ if (currentUser) {
   likeBtn.addEventListener("click", async () => {
   try {
 
+    // 🔥 UI instant update (IMPORTANT)
+    liked = !liked;
+
+    if (liked) {
+      likeBtn.setAttribute("fill", "red");
+      likeBtn.setAttribute("stroke", "red");
+    } else {
+      likeBtn.setAttribute("fill", "none");
+      likeBtn.setAttribute("stroke", "white");
+    }
+
+    // 🔥 backend call
     const res = await fetch(`${BASE_URL}/api/like/${video._id}`, {
       method: "POST",
       headers: {
@@ -429,28 +441,12 @@ if (currentUser) {
 
     const data = await res.json();
 
-    liked = data.liked;
-
-    if (liked) {
-      likeBtn.setAttribute("fill", "red");
-      likeBtn.setAttribute("stroke", "red");
-    } else {
-      likeBtn.setAttribute("fill", "none");
-      likeBtn.setAttribute("stroke", "white");
-    }
-
+    // 🔥 सही count update
     likeCount.textContent = data.likes;
-
-    // 🔥 animation (optional)
-    likeBtn.classList.add("active");
-    setTimeout(() => {
-      likeBtn.classList.remove("active");
-    }, 200);
 
   } catch (err) {
     console.log("LIKE ERROR:", err);
   }
-   
 });
 
 // ================= FINAL APPEND =================
