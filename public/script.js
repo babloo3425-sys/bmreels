@@ -95,18 +95,30 @@
     const data = await res.json();
 
     // ================= USER LIKES FETCH =================
-     let userLikes = [];
+    // ================= USER LIKES FETCH (SAFE) =================
+let userLikes = [];
 
-     if (currentUser) {
-     
-     try {
-     const resLikes = await fetch(`${BASE_URL}/api/user-likes/${currentUser}`);
-     const dataLikes = await resLikes.json();
-     userLikes = dataLikes.liked || [];
-    } catch (err) {
-     console.log("USER LIKES ERROR:", err);
-   }
- }
+if (currentUser) {
+  try {
+
+    const resLikes = await fetch(`${BASE_URL}/api/user-likes/${currentUser}`);
+
+    // 👇 पहले text लो
+    const text = await resLikes.text();
+
+    // 👇 check करो JSON है या नहीं
+    if (!text.startsWith("{")) {
+      console.log("NOT JSON RESPONSE:", text);
+      userLikes = [];
+    } else {
+      const dataLikes = JSON.parse(text);
+      userLikes = dataLikes.liked || [];
+    }
+
+  } catch (err) {
+    console.log("USER LIKES ERROR:", err);
+  }
+}
     const resC = await fetch(`${BASE_URL}/api/comments`);
     const commentsDataFromServer = await resC.json();
     commentsData = commentsDataFromServer;
