@@ -1,124 +1,94 @@
- const express = require("express");
- const cors = require("cors");
- const path = require("path");
- const fs = require("fs");
- const mongoose = require("mongoose");
- const app = express();
- const cloudinary = require("cloudinary").v2;
- const { CloudinaryStorage } = require("multer-storage-cloudinary");
- const multer = require("multer");
- const streamifier = require("streamifier");
+ // ================= IMPORTS =================
+const express = require("express");
+const cors = require("cors");
+const path = require("path");
+const fs = require("fs");
+const mongoose = require("mongoose");
+require("dotenv").config();
 
+const app = express();
+
+// ================= MIDDLEWARE =================
 app.use(cors());
- app.use(express.json());
- app.use(express.json({ limit: "100mb" }));
- app.use(express.urlencoded({ limit: "100mb", extended: true }));
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
 
- app.use((req, res, next) => {
+// ================= TIMEOUT FIX =================
+app.use((req, res, next) => {
   req.setTimeout(0);
   res.setTimeout(0);
   next();
- });
-
-
- cloudinary.config({
-  cloud_name: "dzbzbljod",
-  api_key: "681591956146547",
-  api_secret: "pPr2mcxwmCvfmH15Bl3SWi_MMvI"
 });
 
-console.log("CLOUD:", process.env.CLOUDINARY_CLOUD_NAME);
-console.log("KEY:", process.env.CLOUDINARY_API_KEY);
-console.log("SECRET:", process.env.CLOUDINARY_API_SECRET);
+// ================= CLOUDINARY CONFIG =================
+// ❗ BM FIX: env use karo (security)
+const cloudinary = require("cloudinary").v2;
 
-require("dotenv").config();
-  mongoose.connect(process.env.MONGO_URI || "mongodb+srv://bblkumar8_db_user:BBlk1973MMkrSH@cluster0.baicjxm.mongodb.net/?retryWrites=true&w=majority")
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+
+// ================= MONGODB =================
+mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("MongoDB connected"))
   .catch(err => console.log("Mongo Error:", err));
 
- const videoSchema = new mongoose.Schema({
+
+// ================= SCHEMAS =================
+
+// 🔥 VIDEO
+const videoSchema = new mongoose.Schema({
   url: String,
   username: String,
   caption: String,
   userId: String,
   likes: { type: Number, default: 0 },
   comments: { type: [String], default: [] }
- });
+}, { timestamps: true }); // BM UPDATE
 
- const Video = mongoose.model("Video", videoSchema);
+const Video = mongoose.model("Video", videoSchema);
 
- // ================= FOLLOW MODEL =================
 
- const followSchema = new mongoose.Schema({
-  follower: String,   // kaun follow kar raha
-  following: String   // kisko follow kar raha
- });
+// 🔥 FOLLOW
+const followSchema = new mongoose.Schema({
+  follower: String,
+  following: String
+});
 
- const Follow = mongoose.model("Follow", followSchema);
+const Follow = mongoose.model("Follow", followSchema);
 
- // ================= USER MODEL =================
 
- const userSchema = new mongoose.Schema({
+// 🔥 USER
+const userSchema = new mongoose.Schema({
   username: String,
-  dp: String   // base64 image
- });
+  dp: String
+});
 
- const User = mongoose.model("User", userSchema);
+const User = mongoose.model("User", userSchema);
 
- 
- let likesData = {};
- let commentsData = {};
- let reels = []; // अगर पहले से है तो same use करो
+// ================= LIKE MODEL =================
+const likeSchema = new mongoose.Schema({
+  user: String,     // kisne like kiya
+  videoId: String   // kis video ko like kiya
+});
 
- app.post("/deleteReel", (req, res) => {
-  const { id } = req.body;
+const Like = mongoose.model("Like", likeSchema);
 
-  reels = reels.filter(r => r.id !== id);
+// ================= API =================
 
-  res.json({ success: true });
- });
-
- app.post("/api/delete-video/:id", async (req, res) => {
-  const { username } = req.body;
-
-  const video = await Video.findById(req.params.id);
-
-  if (!video) {
-    return res.json({ success: false });
-  }
-
-  // 🔐 only owner allowed
-  if (video.username !== username) {
-    return res.json({ success: false, message: "Not allowed" });
-  }
-
-  await Video.findByIdAndDelete(req.params.id);
-
-  res.json({ success: true });
- });
-
- // 👇 static frontend serve
-app.use(express.static(path.join(__dirname, "../public")));
-
-
-// ✅ FIX HERE
-const PORT = process.env.PORT || 3001;
- 
+// 🔥 GET VIDEOS (PAGINATION)
 app.get("/api/videos", async (req, res) => {
   try {
-    // ✅ offset frontend se aayega (scroll ke time increase hoga)
     const offset = parseInt(req.query.offset) || 0;
-
-    // ✅ limit thoda increase kar dete hain (smooth UX ke liye)
     const limit = 10;
 
-    // ✅ MongoDB se videos fetch
     const videos = await Video.find()
-      .sort({ _id: -1 }) // latest first
-      .skip(offset)      // pagination
+      .sort({ createdAt: -1 }) // BM FIX
+      .skip(offset)
       .limit(limit);
 
-    // ✅ IMPORTANT: always array return ho
     res.json({
       success: true,
       count: videos.length,
@@ -126,23 +96,144 @@ app.get("/api/videos", async (req, res) => {
     });
 
   } catch (err) {
-    console.error("Error fetching videos:", err);
+    console.error("VIDEO FETCH ERROR:", err);
     res.status(500).json({ success: false });
   }
- });
+});
 
- app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-  });
- // storage config
- const uploadPath = path.join(__dirname, "../public/videos");
 
- // folder auto create
- if (!fs.existsSync(uploadPath)) {
-  fs.mkdirSync(uploadPath, { recursive: true });
- }
+// 🔥 SAVE VIDEO
+app.post("/api/save-video", async (req, res) => {
+  try {
 
- // 🔥 storage
+    const { url, username, caption } = req.body;
+
+    if (!url || !username) {
+      return res.status(400).json({ success: false });
+    }
+
+    const newVideo = new Video({
+      url,
+      username,
+      caption
+    });
+
+    await newVideo.save();
+
+    res.json({ success: true, video: newVideo });
+
+  } catch (err) {
+    console.log("SAVE VIDEO ERROR:", err);
+    res.status(500).json({ success: false });
+  }
+});
+
+
+// 🔥 DELETE VIDEO (SECURE)
+app.post("/api/delete-video/:id", async (req, res) => {
+  try {
+
+    const { username } = req.body;
+    const video = await Video.findById(req.params.id);
+
+    if (!video) {
+      return res.json({ success: false });
+    }
+
+    if (video.username !== username) {
+      return res.json({ success: false, message: "Not allowed" });
+    }
+
+    await Video.findByIdAndDelete(req.params.id);
+
+    res.json({ success: true });
+
+  } catch (err) {
+    console.log("DELETE ERROR:", err);
+    res.status(500).json({ success: false });
+  }
+});
+
+
+// ================= LIKE SYSTEM =================
+
+// LIKE
+app.post("/api/like/:id", async (req, res) => {
+  const video = await Video.findById(req.params.id);
+  if (!video) return res.json({ likes: 0 });
+
+  video.likes += 1;
+  await video.save();
+
+  res.json({ likes: video.likes });
+});
+
+// UNLIKE
+app.post("/api/unlike/:id", async (req, res) => {
+  const video = await Video.findById(req.params.id);
+  if (!video) return res.json({ likes: 0 });
+
+  video.likes = Math.max(0, video.likes - 1);
+  await video.save();
+
+  res.json({ likes: video.likes });
+});
+
+
+// ================= COMMENT SYSTEM =================
+
+// ADD COMMENT
+app.post("/api/comment/:id", async (req, res) => {
+  try {
+    const { text } = req.body;
+
+    const video = await Video.findById(req.params.id);
+    if (!video) return res.json([]);
+
+    video.comments.push(text);
+    await video.save();
+
+    res.json(video.comments);
+
+  } catch (err) {
+    console.log("COMMENT ERROR:", err);
+    res.status(500).json([]);
+  }
+});
+
+
+// DELETE COMMENT
+app.post("/api/delete-comment/:id", async (req, res) => {
+  try {
+    const { text } = req.body;
+
+    const video = await Video.findById(req.params.id);
+    if (!video) return res.json([]);
+
+    video.comments = video.comments.filter(c => c !== text);
+    await video.save();
+
+    res.json(video.comments);
+
+  } catch (err) {
+    console.log("COMMENT DELETE ERROR:", err);
+    res.status(500).json([]);
+  }
+});
+
+
+// ================= STATIC =================
+app.use(express.static(path.join(__dirname, "../public")));
+
+
+// ================= SERVER =================
+const PORT = process.env.PORT || 3001;
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
+// ================= CLOUDINARY STORAGE =================
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: async (req, file) => ({
@@ -150,180 +241,278 @@ const storage = new CloudinaryStorage({
     resource_type: "video"
   })
 });
-// 🔥 upload
-const upload = multer({ storage });  
 
-// get likes
- app.get("/api/likes", (req, res) => {
-  res.json(likesData);
- });
+const upload = multer({ storage });
 
- // update like
- app.post("/api/like/:id", async (req, res) => {
-  const video = await Video.findById(req.params.id);
+  // ================= LIKE TOGGLE =================
+  app.post("/api/like/:id", async (req, res) => {
+  try {
 
-  video.likes += 1;
-  await video.save();
+    const { username } = req.body;
+    const videoId = req.params.id;
 
-  res.json({ likes: video.likes });
- });
+    if (!username) {
+      return res.json({ success: false });
+    }
 
- // UNLIKE
- app.post("/api/unlike/:id", async (req, res) => {
-  const video = await Video.findById(req.params.id);
+    const existing = await Like.findOne({ user: username, videoId });
 
-  if (video.likes > 0) {
-    video.likes -= 1;
-    await video.save();
+    const video = await Video.findById(videoId);
+    if (!video) return res.json({ success: false });
+
+    if (existing) {
+      // UNLIKE
+      await Like.deleteOne({ user: username, videoId });
+
+      video.likes = Math.max(0, video.likes - 1);
+      await video.save();
+
+      return res.json({ liked: false, likes: video.likes });
+
+    } else {
+      // LIKE
+      await Like.create({ user: username, videoId });
+
+      video.likes += 1;
+      await video.save();
+
+      return res.json({ liked: true, likes: video.likes });
+    }
+
+  } catch (err) {
+    console.log("LIKE TOGGLE ERROR:", err);
+    res.status(500).json({ success: false });
   }
+});
 
-  res.json({ likes: video.likes });
- });
+// ================= GET USER LIKES =================
+app.get("/api/user-likes/:username", async (req, res) => {
+  try {
 
- // get comments
- app.get("/api/comments", (req, res) => {
-  res.json(commentsData);
- });
+    const username = req.params.username;
 
- // add comment
- app.post("/api/comment/:id", async (req, res) => {
-  const { text } = req.body;
+    const likes = await Like.find({ user: username });
 
-  const video = await Video.findById(req.params.id);
+    const likedIds = likes.map(l => l.videoId);
 
-  if (!video.comments) video.comments = [];
+    res.json({ liked: likedIds });
 
-  video.comments.push(text);
+  } catch (err) {
+    console.log("GET LIKES ERROR:", err);
+    res.status(500).json({ liked: [] });
+  }
+});
 
-  await video.save();
+// ================= COMMENT SYSTEM =================
 
-  res.json(video.comments);
- });
+// ADD COMMENT
+app.post("/api/comment/:id", async (req, res) => {
+  try {
+    const { text } = req.body;
 
- // delete comment
- app.post("/api/delete-comment/:id", async (req, res) => {
-  const { text } = req.body;
+    if (!text) return res.json([]);
 
-  const video = await Video.findById(req.params.id);
+    const video = await Video.findById(req.params.id);
 
-  if (!video.comments) video.comments = [];
+    if (!video) return res.json([]);
 
-  video.comments = video.comments.filter(c => c !== text);
+    video.comments.push(text);
+    await video.save();
 
-  await video.save();
+    res.json(video.comments);
 
-  res.json(video.comments);
- });
+  } catch (err) {
+    console.log("COMMENT ERROR:", err);
+    res.status(500).json([]);
+  }
+});
 
- 
- app.post("/api/save-video", async (req, res) => {
+
+// DELETE COMMENT
+app.post("/api/delete-comment/:id", async (req, res) => {
+  try {
+    const { text } = req.body;
+
+    const video = await Video.findById(req.params.id);
+
+    if (!video) return res.json([]);
+
+    video.comments = video.comments.filter(c => c !== text);
+    await video.save();
+
+    res.json(video.comments);
+
+  } catch (err) {
+    console.log("COMMENT DELETE ERROR:", err);
+    res.status(500).json([]);
+  }
+});
+
+
+// ================= SAVE VIDEO =================
+app.post("/api/save-video", async (req, res) => {
   try {
     const { url, username, caption } = req.body;
 
-    if (!url) {
-      return res.status(400).json({ error: "No URL" });
+    if (!url || !username) {
+      return res.status(400).json({ success: false });
     }
 
-    await Video.create({
+    const video = await Video.create({
       url,
       username,
       caption,
       userId: username
     });
 
-    res.json({ success: true });
+    res.json({ success: true, video });
 
   } catch (err) {
     console.log("SAVE ERROR:", err);
-    res.status(500).json({ error: err.message });
+    res.status(500).json({ success: false });
   }
 });
- // ================= PROFILE ROUTE =================
 
- // Get profile data + user videos
-   app.get("/api/profile/:username", async (req, res) => {
-   try {
+// ================= PROFILE ROUTE =================
+
+// Get profile data + stats + videos
+app.get("/api/profile/:username", async (req, res) => {
+  try {
+
     const username = req.params.username;
 
-    // user ke videos
-    const videos = await Video.find({ username }).sort({ createdAt: -1 });
+    // ================= USER VIDEOS =================
+    const videos = await Video.find({ username })
+      .sort({ createdAt: -1 });
+
+    // ================= FOLLOW STATS =================
+    const followers = await Follow.countDocuments({ following: username });
+    const following = await Follow.countDocuments({ follower: username });
 
     res.json({
+      success: true,
       username,
       totalVideos: videos.length,
+      followers,
+      following,
       videos
     });
 
   } catch (err) {
-    console.log(err);
-    res.status(500).json({ error: "Server error" });
+    console.log("PROFILE ERROR:", err);
+    res.status(500).json({ success: false });
   }
- });
+});
 
- // ================= FOLLOW TOGGLE =================
 
-  app.post("/api/follow", async (req, res) => {
-  const { follower, following } = req.body;
+// ================= FOLLOW TOGGLE =================
+app.post("/api/follow", async (req, res) => {
+  try {
 
-  if (follower === following) {
-    return res.json({ success: false });
+    const { follower, following } = req.body;
+
+    if (!follower || !following || follower === following) {
+      return res.json({ success: false });
+    }
+
+    const existing = await Follow.findOne({ follower, following });
+
+    if (existing) {
+      // UNFOLLOW
+      await Follow.deleteOne({ follower, following });
+      return res.json({ following: false });
+
+    } else {
+      // FOLLOW
+      await Follow.create({ follower, following });
+      return res.json({ following: true });
+    }
+
+  } catch (err) {
+    console.log("FOLLOW ERROR:", err);
+    res.status(500).json({ success: false });
   }
+});
 
-  const existing = await Follow.findOne({ follower, following });
 
-  if (existing) {
-    // unfollow
-    await Follow.deleteOne({ follower, following });
-    return res.json({ following: false });
-  } else {
-    // follow
-    await Follow.create({ follower, following });
-    return res.json({ following: true });
+// ================= FOLLOW STATUS =================
+app.get("/api/follow-status", async (req, res) => {
+  try {
+
+    const { follower, following } = req.query;
+
+    if (!follower || !following) {
+      return res.json({ following: false });
+    }
+
+    const existing = await Follow.findOne({ follower, following });
+
+    res.json({ following: !!existing });
+
+  } catch (err) {
+    console.log("FOLLOW STATUS ERROR:", err);
+    res.status(500).json({ following: false });
   }
- });
+});
 
- // ================= FOLLOW STATUS =================
 
-  app.get("/api/follow-status", async (req, res) => {
-  const { follower, following } = req.query;
+// ================= FOLLOWERS COUNT =================
+app.get("/api/followers/:username", async (req, res) => {
+  try {
 
-  const existing = await Follow.findOne({ follower, following });
+    const username = req.params.username;
 
-  res.json({ following: !!existing });
- });
+    const count = await Follow.countDocuments({ following: username });
 
- // followers count
-  app.get("/api/followers/:username", async (req, res) => {
-  const username = req.params.username;
+    res.json({ followers: count });
 
-  const count = await Follow.countDocuments({ following: username });
-
-  res.json({ followers: count });
- });
-
- // ================= DP UPLOAD =================
-
-  app.post("/api/upload-dp", async (req, res) => {
-  const { username, dp } = req.body;
-
-  let user = await User.findOne({ username });
-
-  if (user) {
-    user.dp = dp;
-    await user.save();
-  } else {
-    user = await User.create({ username, dp });
+  } catch (err) {
+    console.log("FOLLOWERS ERROR:", err);
+    res.status(500).json({ followers: 0 });
   }
+});
 
-  res.json({ success: true });
- });
 
- // ================= GET DP =================
+// ================= DP UPLOAD =================
+app.post("/api/upload-dp", async (req, res) => {
+  try {
 
- app.get("/api/user/:username", async (req, res) => {
-  const user = await User.findOne({ username: req.params.username });
+    const { username, dp } = req.body;
 
-  res.json({
-    dp: user?.dp || null
-  });
- });
+    if (!username || !dp) {
+      return res.json({ success: false });
+    }
+
+    let user = await User.findOne({ username });
+
+    if (user) {
+      user.dp = dp;
+      await user.save();
+    } else {
+      user = await User.create({ username, dp });
+    }
+
+    res.json({ success: true });
+
+  } catch (err) {
+    console.log("DP UPLOAD ERROR:", err);
+    res.status(500).json({ success: false });
+  }
+});
+
+
+// ================= GET USER DP =================
+app.get("/api/user/:username", async (req, res) => {
+  try {
+
+    const user = await User.findOne({ username: req.params.username });
+
+    res.json({
+      dp: user?.dp || null
+    });
+
+  } catch (err) {
+    console.log("GET DP ERROR:", err);
+    res.status(500).json({ dp: null });
+  }
+});
