@@ -88,13 +88,10 @@
     // BM FIX: prevent duplicate calls
    if (isLoading) return;
    isLoading = true;
-
-
-    // ================= FETCH DATA =================
+   // ================= FETCH DATA =================
     const res = await fetch(`${BASE_URL}/api/videos?offset=${offset}`);
     const data = await res.json();
 
-    // ================= USER LIKES FETCH =================
     // ================= USER LIKES FETCH (SAFE) =================
 let userLikes = [];
 
