@@ -89,7 +89,6 @@
    if (isLoading) return;
    isLoading = true;
 
-   try {
 
     // ================= FETCH DATA =================
     const res = await fetch(`${BASE_URL}/api/videos?offset=${offset}`);
@@ -259,23 +258,9 @@
         } catch (err) {
           console.log("DELETE ERROR:", err);
         }
-
       });
 
-    });
-
-    // ================= PAGINATION =================
-    offset += data.data.length;
-
-  } catch (err) {
-    console.log("LOAD VIDEO ERROR:", err);
-  }
-
-   // BM FIX: always reset loading
-   isLoading = false;
-  }
-
-   // ================= COMMENT PANEL =================
+    // ================= COMMENT PANEL =================
 
    // BM FIX: avoid duplicate declaration (agar upar already hai to ye safe hai)
    const commentPanelEl = document.getElementById("commentPanel");
@@ -372,8 +357,7 @@
 
    const heart = div.querySelector(".centerHeart");
    const shareBtn = div.querySelector(".shareBtn");
-   const videoEl = div.querySelector("video");
-
+   
    // ================= INITIAL LIKE STATE =================
    let liked = userLikes.includes(video._id);
 
@@ -463,7 +447,9 @@
   } catch (err) {
     console.log("LIKE ERROR:", err);
   }
-    
+   
+});
+
 // ================= FINAL APPEND =================
 div.style.height = "100vh";
 container.appendChild(div);
@@ -476,7 +462,7 @@ isLoading = false;
 
 // BM UPDATE: ensure scroll system after load
 setupScrollVideo();
-
+}
 
 // ================= INITIAL LOAD =================
 document.addEventListener("DOMContentLoaded", () => {
