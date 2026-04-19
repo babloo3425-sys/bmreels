@@ -216,29 +216,33 @@ body {
 
 /* ================= COMMENT INPUT FIX ================= */
 .commentInputBox {
-  position: fixed;   /* 🔥 main fix */
+  position: fixed;
   bottom: 0;
   left: 0;
   width: 100%;
-  
+
   display: flex;
+  align-items: center;
+  gap: 8px; /* 🔥 spacing fix */
+
   padding: 10px;
-  background: #000;  /* ya white, jo tum use kar rahe */
-  z-index: 999;
+  background: #000;
+  box-sizing: border-box; /* 🔥 important */
 }
 
-/* ================= INPUT ================= */
+/* INPUT */
 #commentInput {
   flex: 1;
-  padding: 8px;
-  font-size: 16px; /* BM FIX: mobile zoom issue avoid */
+  min-width: 0; /* 🔥 overflow fix */
+  padding: 10px;
+  font-size: 16px;
 }
 
-/* ================= POST BUTTON ================= */
+/* BUTTON */
 #commentPost {
-  padding: 8px;
+  flex-shrink: 0; /* 🔥 button squeeze na ho */
+  padding: 10px 12px;
 }
-
 /* plus button */
 #openUpload {
   position: fixed;
