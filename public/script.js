@@ -7,6 +7,7 @@
    const panel = document.getElementById("commentPanel");
    const commentList = document.getElementById("commentList");
 
+   let currentVideo = null;   
    let currentVideoId = null;
    let commentsData = {};
    let currentCommentBtn = null;
@@ -283,9 +284,10 @@ if (currentUser) {
     commentPanelEl.classList.add("show");
     commentOverlayEl.classList.add("show");
 
-    // ================= CURRENT VIDEO TRACK =================
-    currentVideoId = video._id;
-    currentCommentBtn = commentCountSpan;
+   // ================= CURRENT VIDEO TRACK =================
+     currentVideo = video;        // 🔥 ADD THIS
+     currentVideoId = video._id;
+     currentCommentBtn = commentCountSpan;
 
     if (!commentList) return;
 
@@ -528,22 +530,14 @@ if (overlay && panel) {
 // ================= COMMENTS POST =================
 const commentInput = document.getElementById("commentInput");
 const commentPost = document.getElementById("commentPost");
-if (commentPost) {
+  
+  if (commentPost) {
+    commentPost.addEventListener("click", async () => {
 
-  commentPost.addEventListener("click", async () => {
-
-    const text = commentInput?.value.trim();
-
-    if (!text) return;
-
-    // BM FIX: empty video guard
-    if (!currentVideoId) {
-      console.log("No video selected for comment");
-      return;
-    }
+    const text = commentInput.value.trim();
+    if (!text || !currentVideoId) return;
 
     try {
-
       const res = await fetch(`${BASE_URL}/api/comment/${currentVideoId}`, {
         method: "POST",
         headers: {
@@ -554,30 +548,33 @@ if (commentPost) {
 
       const data = await res.json();
 
-      // ================= UI UPDATE =================
-      const row = document.createElement("div");
-      row.textContent = text;
-
-      if (commentList) {
-        commentList.appendChild(row);
+      // 🔥 1. update current video
+      if (currentVideo) {
+        currentVideo.comments = data;
       }
 
-      // BM FIX: count sync
+      // 🔥 2. UI me turant show
+      const row = document.createElement("div");
+      row.textContent = text;
+      commentList.appendChild(row);
+
+      // 🔥 3. count update
       if (currentCommentBtn) {
         currentCommentBtn.textContent = data.length;
       }
 
-      // BM UPDATE: clear input
+      // 🔥 4. clear input
       commentInput.value = "";
+
+      // 🔥 5. scroll bottom
+      commentList.scrollTop = commentList.scrollHeight;
 
     } catch (err) {
       console.log("COMMENT POST ERROR:", err);
     }
 
   });
-
 }
-
 
 // ================= UPLOAD SYSTEM =================
 const videoUpload = document.getElementById("videoUpload");
