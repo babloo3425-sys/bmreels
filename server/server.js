@@ -98,9 +98,9 @@ app.get("/api/videos", async (req, res) => {
     const limit = 10;
 
     const videos = await Video.find()
-      .sort({ createdAt: -1 }) // BM FIX
-      .skip(offset)
-      .limit(limit);
+    .sort({ views: -1, likes: -1 }) // 🔥 trending logic
+    .skip(offset)
+    .limit(limit);
 
     res.json({
       success: true,
