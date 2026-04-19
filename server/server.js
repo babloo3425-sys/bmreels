@@ -482,3 +482,29 @@ app.get("/api/user/:username", async (req, res) => {
     res.status(500).json({ dp: null });
   }
 });
+
+// ================= VIEW API =================
+app.post("/api/view/:id", async (req, res) => {
+  try {
+
+    const { username } = req.body;
+    const videoId = req.params.id;
+
+    if (!username) {
+      return res.json({ views: 0 });
+    }
+
+    const video = await Video.findById(videoId);
+    if (!video) return res.json({ views: 0 });
+
+    // 🔥 simple increment
+    video.views += 1;
+    await video.save();
+
+    res.json({ views: video.views });
+
+  } catch (err) {
+    console.log("VIEW ERROR:", err);
+    res.status(500).json({ views: 0 });
+  }
+});
