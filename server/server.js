@@ -81,6 +81,14 @@ const likeSchema = new mongoose.Schema({
 
 const Like = mongoose.model("Like", likeSchema);
 
+// ================= VIEW MODEL =================
+const viewSchema = new mongoose.Schema({
+  user: String,
+  videoId: String
+});
+
+const View = mongoose.model("View", viewSchema);
+
 // ================= API =================
 
 // 🔥 GET VIDEOS (PAGINATION)
@@ -484,22 +492,25 @@ app.get("/api/user/:username", async (req, res) => {
 });
 
 // ================= VIEW API =================
-app.post("/api/view/:id", async (req, res) => {
+  app.post("/api/view/:id", async (req, res) => {
   try {
 
     const { username } = req.body;
     const videoId = req.params.id;
 
-    if (!username) {
-      return res.json({ views: 0 });
-    }
+    if (!username) return res.json({ views: 0 });
+
+    const existing = await View.findOne({ user: username, videoId });
 
     const video = await Video.findById(videoId);
     if (!video) return res.json({ views: 0 });
 
-    // 🔥 simple increment
-    video.views += 1;
-    await video.save();
+    if (!existing) {
+      await View.create({ user: username, videoId });
+
+      video.views += 1;
+      await video.save();
+    }
 
     res.json({ views: video.views });
 
