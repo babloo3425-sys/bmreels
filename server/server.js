@@ -218,48 +218,36 @@ const storage = new CloudinaryStorage({
   })
 });
 
-const upload = multer({ storage });
+const upload = multer({ storage: multer.memoryStorage() });
 
   // ================= LIKE TOGGLE =================
-app.post("/api/like/:id", async (req, res) => {
-  try {
+// get likes
+ app.get("/api/likes", (req, res) => {
+  res.json(likesData);
+ });
 
-    const { username } = req.body;
-    const videoId = req.params.id;
+ // update like
+ app.post("/api/like/:id", async (req, res) => {
+  const video = await Video.findById(req.params.id);
 
-    if (!username) {
-      return res.json({ success: false });
-    }
+  video.likes += 1;
+  await video.save();
 
-    const existing = await Like.findOne({ user: username, videoId });
+  res.json({ likes: video.likes });
+ });
 
-    const video = await Video.findById(videoId);
-    if (!video) return res.json({ success: false });
+ // UNLIKE
+ app.post("/api/unlike/:id", async (req, res) => {
+  const video = await Video.findById(req.params.id);
 
-    if (existing) {
-      // ❌ already liked → UNLIKE
-      await Like.deleteOne({ user: username, videoId });
-
-      video.likes = Math.max(0, video.likes - 1);
-      await video.save();
-
-      return res.json({ liked: false, likes: video.likes });
-
-    } else {
-      // ✅ new like
-      await Like.create({ user: username, videoId });
-
-      video.likes += 1;
-      await video.save();
-
-      return res.json({ liked: true, likes: video.likes });
-    }
-
-  } catch (err) {
-    console.log("LIKE TOGGLE ERROR:", err);
-    res.status(500).json({ success: false });
+  if (video.likes > 0) {
+    video.likes -= 1;
+    await video.save();
   }
-});
+
+  res.json({ likes: video.likes });
+ });
+
 // ================= GET USER LIKES =================
 app.get("/api/user-likes/:username", async (req, res) => {
   try {
