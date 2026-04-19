@@ -931,3 +931,14 @@ if (logoutBtn) {
     window.location.href = "index.html";
   });
 }
+
+// ================= KEYBOARD SCROLL FIX =================
+const commentInput = document.getElementById("commentInput");
+
+if (commentInput) {
+  commentInput.addEventListener("focus", () => {
+    setTimeout(() => {
+      commentInput.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 300);
+  });
+}

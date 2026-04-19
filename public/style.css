@@ -203,25 +203,40 @@ body {
   border-radius: 2px;
 }
 
+/* ================= COMMENT LIST ================= */
 #commentList {
   height: 40vh;
   overflow-y: auto;
   padding: 10px;
   color: black;
+
+  /* BM UPDATE: space for input */
+  margin-bottom: 70px;
 }
 
+/* ================= COMMENT INPUT FIX ================= */
 .commentInputBox {
+  position: fixed;   /* 🔥 main fix */
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  
   display: flex;
   padding: 10px;
+  background: #000;  /* ya white, jo tum use kar rahe */
+  z-index: 999;
 }
 
+/* ================= INPUT ================= */
 #commentInput {
   flex: 1;
-  padding: 8px;
+  padding: 10px;
+  font-size: 16px; /* BM FIX: mobile zoom issue avoid */
 }
 
+/* ================= POST BUTTON ================= */
 #commentPost {
-  padding: 8px;
+  padding: 10px;
 }
 
 /* plus button */
