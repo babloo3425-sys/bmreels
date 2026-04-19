@@ -156,32 +156,6 @@ app.post("/api/delete-video/:id", async (req, res) => {
   }
 });
 
-
-// ================= LIKE SYSTEM =================
-
-// LIKE
-app.post("/api/like/:id", async (req, res) => {
-  const video = await Video.findById(req.params.id);
-  if (!video) return res.json({ likes: 0 });
-
-  video.likes += 1;
-  await video.save();
-
-  res.json({ likes: video.likes });
-});
-
-// UNLIKE
-app.post("/api/unlike/:id", async (req, res) => {
-  const video = await Video.findById(req.params.id);
-  if (!video) return res.json({ likes: 0 });
-
-  video.likes = Math.max(0, video.likes - 1);
-  await video.save();
-
-  res.json({ likes: video.likes });
-});
-
-
 // ================= COMMENT SYSTEM =================
 
 // ADD COMMENT
@@ -247,7 +221,7 @@ const storage = new CloudinaryStorage({
 const upload = multer({ storage });
 
   // ================= LIKE TOGGLE =================
-  app.post("/api/like/:id", async (req, res) => {
+app.post("/api/like/:id", async (req, res) => {
   try {
 
     const { username } = req.body;
@@ -263,7 +237,7 @@ const upload = multer({ storage });
     if (!video) return res.json({ success: false });
 
     if (existing) {
-      // UNLIKE
+      // ❌ already liked → UNLIKE
       await Like.deleteOne({ user: username, videoId });
 
       video.likes = Math.max(0, video.likes - 1);
@@ -272,7 +246,7 @@ const upload = multer({ storage });
       return res.json({ liked: false, likes: video.likes });
 
     } else {
-      // LIKE
+      // ✅ new like
       await Like.create({ user: username, videoId });
 
       video.likes += 1;
@@ -286,7 +260,6 @@ const upload = multer({ storage });
     res.status(500).json({ success: false });
   }
 });
-
 // ================= GET USER LIKES =================
 app.get("/api/user-likes/:username", async (req, res) => {
   try {

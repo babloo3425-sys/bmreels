@@ -417,20 +417,8 @@ if (currentUser) {
 
 // ================= LIKE CLICK =================
   likeBtn.addEventListener("click", async () => {
+
   try {
-
-    // 🔥 UI instant update (IMPORTANT)
-    liked = !liked;
-
-    if (liked) {
-      likeBtn.setAttribute("fill", "red");
-      likeBtn.setAttribute("stroke", "red");
-    } else {
-      likeBtn.setAttribute("fill", "none");
-      likeBtn.setAttribute("stroke", "white");
-    }
-
-    // 🔥 backend call
     const res = await fetch(`${BASE_URL}/api/like/${video._id}`, {
       method: "POST",
       headers: {
@@ -441,12 +429,23 @@ if (currentUser) {
 
     const data = await res.json();
 
-    // 🔥 सही count update
+    // 🔥 server se decide hoga liked ya nahi
+    liked = data.liked;
+
+    if (liked) {
+      likeBtn.style.fill = "red";
+      likeBtn.style.stroke = "red";
+    } else {
+      likeBtn.style.fill = "none";
+      likeBtn.style.stroke = "white";
+    }
+
     likeCount.textContent = data.likes;
 
   } catch (err) {
     console.log("LIKE ERROR:", err);
   }
+
 });
 
 // ================= FINAL APPEND =================
