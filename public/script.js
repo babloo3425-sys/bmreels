@@ -417,36 +417,44 @@ if (currentUser) {
 
 // ================= LIKE CLICK =================
   likeBtn.addEventListener("click", async () => {
-
   try {
-    const res = await fetch(`${BASE_URL}/api/like/${video._id}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ username: currentUser })
-    });
-
-    const data = await res.json();
-
-    // 🔥 server se decide hoga liked ya nahi
-    liked = data.liked;
 
     if (liked) {
-      likeBtn.style.fill = "red";
-      likeBtn.style.stroke = "red";
-    } else {
-      likeBtn.style.fill = "none";
-      likeBtn.style.stroke = "white";
-    }
+      likeBtn.setAttribute("fill", "none");
+      likeBtn.setAttribute("stroke", "white");
+      liked = false;
 
-    likeCount.textContent = data.likes;
+      const res = await fetch(`${BASE_URL}/api/unlike/${video._id}`, {
+        method: "POST"
+      });
+
+      const data = await res.json();
+      likeCount.textContent = data.likes;
+
+    } else {
+      likeBtn.setAttribute("fill", "red");
+      likeBtn.setAttribute("stroke", "red");
+      liked = true;
+
+      const res = await fetch(`${BASE_URL}/api/like/${video._id}`, {
+        method: "POST"
+      });
+
+      const data = await res.json();
+      likeCount.textContent = data.likes;
+    }
+   
+    // animation
+    likeBtn.classList.add("active");
+    setTimeout(() => {
+      likeBtn.classList.remove("active");
+    }, 200);
 
   } catch (err) {
     console.log("LIKE ERROR:", err);
   }
-
 });
+
 
 // ================= FINAL APPEND =================
 div.style.height = "100vh";
