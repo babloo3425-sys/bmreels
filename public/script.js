@@ -14,6 +14,8 @@
    let offset = 0;
    let isLoading = false;
    let currentUser = null;
+   // ================= VIEW MEMORY =================
+   let viewedVideos = new Set();
 
    // ================= LOGIN SYSTEM =================
    document.addEventListener("DOMContentLoaded", () => {
@@ -171,6 +173,11 @@ if (currentUser) {
             </svg>
             <span>${video.likes || 0}</span>
           </div>
+          
+          <div class="actionItem viewItem">
+            👁️
+          <span>${video.views || 0}</span>
+        </div>
 
           <div class="actionItem commentBtnIcon">
             💬
@@ -214,25 +221,56 @@ if (currentUser) {
           .catch(err => console.log("DP LOAD ERROR:", err));
       }
 
-      // ================= PROFILE CLICK =================
-      const usernameEl = div.querySelector(".username");
+       // ================= PROFILE CLICK =================
+       const usernameEl = div.querySelector(".username");
 
-      usernameEl.onclick = () => {
+        usernameEl.onclick = () => {
         // BM UPDATE: encode सुरक्षित
         window.location.href = `/profile.html?user=${encodeURIComponent(video.username)}`;
-      };
+       };
 
-      // ================= VIDEO + MUTE =================
-      const muteBtn = div.querySelector(".muteBtn");
-      const videoEl = div.querySelector("video");
+       // ================= VIDEO + MUTE =================
+       const muteBtn = div.querySelector(".muteBtn");
+       const videoEl = div.querySelector("video");
 
-      videoEl.muted = true;
+        videoEl.muted = true;
 
-      muteBtn.addEventListener("click", () => {
+        muteBtn.addEventListener("click", () => {
         videoEl.muted = !videoEl.muted;
         muteBtn.textContent = videoEl.muted ? "🔇" : "🔊";
-      });
+       });
 
+       // ================= VIEW COUNT SIMPLE =================
+       videoEl.addEventListener("play", async () => {
+
+       // 🔥 already viewed check
+       if (viewedVideos.has(video._id)) return;
+
+       viewedVideos.add(video._id);
+
+       if (!currentUser) return;
+
+       try {
+         const res = await fetch(`${BASE_URL}/api/view/${video._id}`, {
+         method: "POST",
+         headers: {
+         "Content-Type": "application/json"
+        },
+         body: JSON.stringify({ username: currentUser })
+       });
+
+        const data = await res.json();
+
+        const viewSpan = div.querySelector(".viewItem span");
+        if (viewSpan) {
+        viewSpan.textContent = data.views;
+       }
+
+       } catch (err) {
+       console.log("VIEW ERROR:", err);
+       }
+
+       });
       // ================= DELETE =================
       const deleteBtn = div.querySelector(".deleteBtn");
 

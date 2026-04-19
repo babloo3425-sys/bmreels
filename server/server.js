@@ -46,8 +46,11 @@ const videoSchema = new mongoose.Schema({
   username: String,
   caption: String,
   userId: String,
+
   likes: { type: Number, default: 0 },
+  views: { type: Number, default: 0 },
   comments: { type: [String], default: [] }
+  
 }, { timestamps: true }); // BM UPDATE
 
 const Video = mongoose.model("Video", videoSchema);
