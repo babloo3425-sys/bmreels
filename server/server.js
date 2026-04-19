@@ -98,7 +98,7 @@ app.get("/api/videos", async (req, res) => {
     const limit = 10;
 
     const videos = await Video.find()
-    .sort({ views: -1, likes: -1 }) // 🔥 trending logic
+    .sort({ views: -1, likes: -1, _id: -1 }) // 🔥 trending logic
     .skip(offset)
     .limit(limit);
 
