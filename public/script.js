@@ -933,8 +933,6 @@ if (logoutBtn) {
 }
 
 // ================= KEYBOARD SCROLL FIX =================
-const commentInput = document.getElementById("commentInput");
-
 if (commentInput) {
   commentInput.addEventListener("focus", () => {
     setTimeout(() => {
