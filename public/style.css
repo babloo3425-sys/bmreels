@@ -553,3 +553,11 @@ body {
 .menuItem:hover {
   background: #222;
 }
+
+.trendingTag {
+  display: inline-block;
+  margin-top: 5px;
+  font-size: 12px;
+  color: #ffcc00;
+  font-weight: bold;
+}

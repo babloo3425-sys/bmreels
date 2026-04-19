@@ -157,7 +157,9 @@ if (currentUser) {
             <span class="username">@${cleanUsername}</span>
             <span class="follow">Follow</span>
           </div>
-    
+ 
+          ${video.views > 5 ? '<span class="trendingTag">🔥 Trending</span>' : ''}
+
           <p>${video.caption || ""}</p>
         </div>
 
