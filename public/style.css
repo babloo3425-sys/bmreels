@@ -230,13 +230,13 @@ body {
 /* ================= INPUT ================= */
 #commentInput {
   flex: 1;
-  padding: 10px;
+  padding: 8px;
   font-size: 16px; /* BM FIX: mobile zoom issue avoid */
 }
 
 /* ================= POST BUTTON ================= */
 #commentPost {
-  padding: 10px;
+  padding: 8px;
 }
 
 /* plus button */
