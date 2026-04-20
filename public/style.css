@@ -62,21 +62,19 @@ body {
   color: #ddd;
 }
 
-/* ================= RIGHT SIDEBAR FINAL ================= */
 .actions {
-  position: absolute;   /* 🔥 वापस absolute */
+  position: absolute;
   right: 10px;
-  bottom: 110px;        /* 👈 + button के ऊपर anchor */
-
+  bottom: calc(100px + env(safe-area-inset-bottom));
+  top: 50%;               /* 👈 center align */
+  transform: translateY(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
-
-  gap: 16px;
+  gap: 18px;
   z-index: 5;
 }
 
-/* ITEM */
 .actionItem {
   display: flex;
   flex-direction: column;
@@ -84,35 +82,17 @@ body {
   color: white;
 }
 
-/* ICON */
-.actionItem svg {
-  width: 26px;
-  height: 26px;
-  transition: transform 0.2s ease;
-}
-
-.actionItem svg.active {
-  transform: scale(1.3);
-}
-
-/* TEXT */
 .actionItem span {
   font-size: 13px;
   margin-top: 4px;
 }
 
-/* MOBILE FIX */
-@media (max-width: 600px) {
-  .actions {
-    right: 8px;
-    bottom: 120px;
-    gap: 14px;
-  }
+.actionItem svg {
+  transition: transform 0.2s ease;
+}
 
-  .actionItem svg {
-    width: 24px;
-    height: 24px;
-  }
+.actionItem svg.active {
+  transform: scale(1.3);
 }
 
 .centerHeart {
