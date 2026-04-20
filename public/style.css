@@ -50,17 +50,17 @@ body {
   color: #ddd;
 }
 
-/* ================= RIGHT ACTIONS (FINAL FIX) ================= */
+/* ================= FINAL SIDEBAR FIX ================= */
 .actions {
   position: absolute;
   right: 10px;
-  bottom: calc(120px + env(safe-area-inset-bottom)); /* 👈 stable anchor */
+  bottom: 110px; /* 👈 + button के ऊपर anchor */
 
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse; /* 🔥 IMPORTANT */
   align-items: center;
 
-  gap: 18px;
+  gap: 16px;
   z-index: 5;
 }
 
@@ -93,7 +93,7 @@ body {
 @media (max-width: 600px) {
   .actions {
     right: 8px;
-    bottom: calc(140px + env(safe-area-inset-bottom)); /* 👈 थोड़ा ऊपर */
+    bottom: 120px;
     gap: 14px;
   }
 
