@@ -590,3 +590,35 @@ body {
   gap: 16px !important;
   z-index: 10;
 }
+
+/* ================= STEP 2: FORCE EQUAL SIZE ================= */
+.reel .actionItem {
+  width: 40px;
+  height: 50px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  text-align: center;
+}
+
+/* ICON FIX */
+.reel .actionItem svg,
+.reel .actionItem img {
+  width: 26px;
+  height: 26px;
+}
+
+/* EMOJI FIX (important 🔥) */
+.reel .actionItem {
+  font-size: 26px;
+  line-height: 1;
+}
+
+/* COUNT TEXT */
+.reel .actionItem span {
+  font-size: 12px;
+  margin-top: 3px;
+}
