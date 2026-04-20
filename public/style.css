@@ -30,6 +30,18 @@ body {
   height: 100%;
   object-fit: cover;
 }
+
+.reel::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 40%;
+  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+  pointer-events: none;
+}
+
 .info {
   position: absolute;
   bottom: 70px; /* 👈 pehle 20px tha */
@@ -50,21 +62,21 @@ body {
   color: #ddd;
 }
 
-/* ================= FINAL SIDEBAR SYSTEM ================= */
+/* ================= RIGHT SIDEBAR FINAL ================= */
 .actions {
-  position: fixed;  /* 🔥 main fix */
+  position: absolute;   /* 🔥 वापस absolute */
   right: 10px;
-  bottom: 120px;    /* 👈 base position */
+  bottom: 110px;        /* 👈 + button के ऊपर anchor */
 
   display: flex;
   flex-direction: column;
   align-items: center;
 
-  gap: 18px;
-  z-index: 999;
+  gap: 16px;
+  z-index: 5;
 }
 
-/* ================= ITEM ================= */
+/* ITEM */
 .actionItem {
   display: flex;
   flex-direction: column;
@@ -72,10 +84,15 @@ body {
   color: white;
 }
 
-.actionItem svg,
-.actionItem img {
+/* ICON */
+.actionItem svg {
   width: 26px;
   height: 26px;
+  transition: transform 0.2s ease;
+}
+
+.actionItem svg.active {
+  transform: scale(1.3);
 }
 
 /* TEXT */
@@ -84,22 +101,11 @@ body {
   margin-top: 4px;
 }
 
-/* ICON */
-.actionItem svg {
-  width: 28px;
-  height: 28px;
-  transition: transform 0.2s ease;
-}
-
-.actionItem svg.active {
-  transform: scale(1.3);
-}
-
-/* ================= MOBILE FIX ================= */
+/* MOBILE FIX */
 @media (max-width: 600px) {
   .actions {
     right: 8px;
-    bottom: 130px;
+    bottom: 120px;
     gap: 14px;
   }
 
@@ -107,21 +113,6 @@ body {
     width: 24px;
     height: 24px;
   }
-
-  .actionItem span {
-    font-size: 12px;
-  }
-}
-
-.reel::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 40%;
-  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-  pointer-events: none;
 }
 
 .centerHeart {
@@ -340,15 +331,15 @@ body {
 }
 
 .muteBtn {
-  position: fixed;   /* 🔥 change */
-  bottom: 20px;
-  left: 15px;
-
-  background: transparent;
-  border: none;
+  position: absolute;
+  bottom: 10px;
+  left: 5px;
+  background: transparent;  /* 🔥 background हटाया */
   color: white;
-  font-size: 18px;
-  z-index: 999;
+  border: none;
+  padding: 0px;
+  font-size: 16px;
+  z-index: 1000;
 }
 
 #loginBox {
