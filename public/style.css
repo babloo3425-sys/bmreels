@@ -576,3 +576,17 @@ body {
   color: #ffcc00;
   font-weight: bold;
 }
+
+/* ================= SAFE SIDEBAR FIX ================= */
+.reel .actions {
+  position: absolute !important;   /* 🔥 override */
+  right: 10px !important;
+  bottom: 110px !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+
+  gap: 16px !important;
+  z-index: 10;
+}
