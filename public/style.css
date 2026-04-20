@@ -98,8 +98,13 @@ body {
 @media (max-width: 600px) {
   .actions {
     right: 8px;
-    bottom: 120px;
+    bottom: 130px;
     gap: 14px;
+  }
+
+  .actionItem svg {
+    width: 24px;
+    height: 24px;
   }
 }
 
