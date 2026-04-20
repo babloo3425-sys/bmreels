@@ -50,17 +50,16 @@ body {
   color: #ddd;
 }
 
-/* ================= STEP 1: ACTIONS CONTAINER ================= */
 .actions {
-  position: absolute;   /* 🔥 fixed नहीं */
+  position: absolute;
   right: 10px;
-  bottom: 110px;        /* 👈 + button के ऊपर base */
-
+  bottom: calc(100px + env(safe-area-inset-bottom));
+  top: 50%;               /* 👈 center align */
+  transform: translateY(-50%);
   display: flex;
-  flex-direction: column;   /* 🔥 vertical stack */
+  flex-direction: column;
   align-items: center;
-
-  gap: 16px;   /* 🔥 spacing */
+  gap: 18px;
   z-index: 5;
 }
 
@@ -575,50 +574,4 @@ body {
   font-size: 12px;
   color: #ffcc00;
   font-weight: bold;
-}
-
-/* ================= SAFE SIDEBAR FIX ================= */
-.reel .actions {
-  position: absolute !important;   /* 🔥 override */
-  right: 10px !important;
-  bottom: 110px !important;
-
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: center !important;
-
-  gap: 16px !important;
-  z-index: 10;
-}
-
-/* ================= STEP 2: FORCE EQUAL SIZE ================= */
-.reel .actionItem {
-  width: 40px;
-  height: 50px;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-
-  text-align: center;
-}
-
-/* ICON FIX */
-.reel .actionItem svg,
-.reel .actionItem img {
-  width: 26px;
-  height: 26px;
-}
-
-/* EMOJI FIX (important 🔥) */
-.reel .actionItem {
-  font-size: 26px;
-  line-height: 1;
-}
-
-/* COUNT TEXT */
-.reel .actionItem span {
-  font-size: 12px;
-  margin-top: 3px;
 }
