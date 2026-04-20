@@ -50,16 +50,17 @@ body {
   color: #ddd;
 }
 
+/* ================= STEP 1: ACTIONS CONTAINER ================= */
 .actions {
-  position: absolute;
+  position: absolute;   /* 🔥 fixed नहीं */
   right: 10px;
-  bottom: calc(100px + env(safe-area-inset-bottom));
-  top: 50%;               /* 👈 center align */
-  transform: translateY(-50%);
+  bottom: 110px;        /* 👈 + button के ऊपर base */
+
   display: flex;
-  flex-direction: column;
+  flex-direction: column;   /* 🔥 vertical stack */
   align-items: center;
-  gap: 18px;
+
+  gap: 16px;   /* 🔥 spacing */
   z-index: 5;
 }
 
