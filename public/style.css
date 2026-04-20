@@ -30,18 +30,6 @@ body {
   height: 100%;
   object-fit: cover;
 }
-
-.reel::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 40%;
-  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-  pointer-events: none;
-}
-
 .info {
   position: absolute;
   bottom: 70px; /* 👈 pehle 20px tha */
@@ -87,12 +75,32 @@ body {
   margin-top: 4px;
 }
 
+.reel::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 40%;
+  background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+  pointer-events: none;
+}
+
 .actionItem svg {
   transition: transform 0.2s ease;
 }
 
 .actionItem svg.active {
   transform: scale(1.3);
+}
+
+/* MOBILE FIX */
+@media (max-width: 600px) {
+  .actions {
+    right: 8px;
+    bottom: 120px;
+    gap: 14px;
+  }
 }
 
 .centerHeart {
