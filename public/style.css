@@ -575,3 +575,49 @@ body {
   color: #ffcc00;
   font-weight: bold;
 }
+/* ================= UPLOAD BOX FIX ================= */
+#uploadBox {
+  position: fixed;
+  bottom: 80px;
+  right: 10px;   /* 👈 screen से थोड़ा अंदर */
+
+  width: 260px;
+  max-width: 90%;
+
+  background: #111;
+  color: white;
+
+  border-radius: 16px;   /* 🔥 shape fix */
+  padding: 12px;
+
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+
+  display: none;
+  z-index: 999;
+}
+
+/* SHOW STATE */
+#uploadBox.show {
+  display: block;
+}
+
+/* ================= PLUS BUTTON ================= */
+.uploadBtn button {
+  width: 44px;
+  height: 44px;
+
+  border-radius: 50%;
+  border: none;
+
+  background: white;
+  color: black;
+
+  font-size: 26px;
+  font-weight: bold;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+}

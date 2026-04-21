@@ -195,13 +195,17 @@ if (currentUser) {
               <rect x="5" y="6" width="14" height="14" rx="2"/>
               <path d="M10 11v6M14 11v6"/>
             </svg>
-          </div>
+          </div>          
 
           <div class="actionItem shareBtn">
             <svg viewBox="0 0 24 24" width="28" height="28" fill="white">
               <path d="M4 12l1.41 1.41L11 7.83V20h2V7.83l5.59 5.58L20 12l-8-8-8 8z"/>
             </svg>
           </div>
+
+          <div class="actionItem uploadBtn">
+          <button class="openUploadBtn">＋</button>
+         </div>
 
         </div>
       `;
@@ -902,10 +906,10 @@ if (menuBtn && menuBox) {
 
   // BM UPDATE: click outside → close menu
   document.addEventListener("click", (e) => {
-    if (!menuBox.contains(e.target) && e.target !== menuBtn) {
-      menuBox.style.display = "none";
-    }
-  });
+  if (e.target.classList.contains("openUploadBtn")) {
+    document.getElementById("uploadBox").classList.toggle("show");
+  }
+});
 
 }
 
