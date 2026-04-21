@@ -324,15 +324,11 @@ body {
 }
 
 .muteBtn {
-  position: absolute;
-  bottom: 10px;
-  left: 5px;
+  position: static;   /* 🔥 main fix */
   background: transparent;  /* 🔥 background हटाया */
   color: white;
   border: none;
-  padding: 0px;
-  font-size: 16px;
-  z-index: 1000;
+  font-size: 20px;
 }
 
 #loginBox {
