@@ -502,27 +502,27 @@ if (currentUser) {
 });
 
 
-// ================= FINAL APPEND =================
-div.style.height = "100vh";
-container.appendChild(div);
+  // ================= FINAL APPEND =================
+   div.style.height = "100vh";
+   container.appendChild(div);
 
-}); // 🔥 forEach close
+   }); // 🔥 forEach close
 
-// ================= PAGINATION =================
-offset += data.data.length;
-isLoading = false;
+   // ================= PAGINATION =================
+    offset += data.data.length;
+    isLoading = false;
 
-// BM UPDATE: ensure scroll system after load
-setupScrollVideo();
-}
+   // BM UPDATE: ensure scroll system after load
+   setupScrollVideo();
+  }
 
-// ================= INITIAL LOAD =================
-document.addEventListener("DOMContentLoaded", () => {
+  // ================= INITIAL LOAD =================
+  document.addEventListener("DOMContentLoaded", () => {
   loadVideos();
 });
 
-// ================= SCROLL VIDEO =================
-function setupScrollVideo() {
+  // ================= SCROLL VIDEO =================
+  function setupScrollVideo() {
 
   const container = document.getElementById("reelsContainer");
 
@@ -551,6 +551,16 @@ function setupScrollVideo() {
       });
 
       video.play().catch(() => {});
+
+      // 🔥 PRELOAD NEXT VIDEO
+     const nextReel = reel.nextElementSibling;
+     if (nextReel) {
+     const nextVideo = nextReel.querySelector("video");
+     if (nextVideo && nextVideo.preload !== "auto") {
+     nextVideo.preload = "auto";
+     nextVideo.load(); // 🔥 force buffer
+    }
+  }
 
     } else {
       video.pause();
