@@ -998,3 +998,59 @@ if (commentInput) {
     }, 300);
   });
 }
+
+if (uploadBtn) {
+  uploadBtn.addEventListener("click", async () => {
+
+    const file = videoUpload.files[0];
+    if (!file) {
+      alert("Select video first");
+      return;
+    }
+
+    if (!currentUser) {
+      alert("Login required");
+      return;
+    }
+
+    try {
+
+      uploadBtn.textContent = "Uploading...";
+      uploadBtn.disabled = true;
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", "bmreels_preset");
+
+      const res = await fetch("https://api.cloudinary.com/v1_1/dzbzbljod/video/upload", {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await res.json();
+
+      if (!data.secure_url) {
+        alert("Upload failed");
+        return;
+      }
+
+      await fetch(`${BASE_URL}/api/save-video`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          url: data.secure_url,
+          username: currentUser
+        })
+      });
+
+      alert("Upload Done ✅");
+
+    } catch (err) {
+      console.log(err);
+      alert("Upload error");
+    }
+
+  });
+}
