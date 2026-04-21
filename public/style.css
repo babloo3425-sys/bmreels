@@ -10,17 +10,20 @@ body {
 #reelsContainer {
   height: 100vh;
   overflow-y: auto; /* ✅ सिर्फ यही scroll करेगा */
+  
   scroll-snap-type: y mandatory;
-}
-
-#reelsContainer {
   scroll-behavior: smooth;
+  
+  -webkit-overflow-scrolling: touch; /* 🔥 mobile smooth */
 }
 /* 🔥 EACH REEL */
 .reel {
   height: 100vh;
   width: 100%;
+  
   scroll-snap-align: start;
+  scroll-snap-stop: always; /* 🔥 important fix */
+  
   position: relative;
   overflow: hidden;
 }
