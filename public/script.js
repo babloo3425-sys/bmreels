@@ -748,139 +748,123 @@ if (uploadBtn) {
 
 }
 
-// ================= VIDEO PREVIEW + UPLOAD =================
+   // ================= VIDEO PREVIEW + UPLOAD =================
 
-// BM FIX: prevent multiple event bindings
-if (videoUpload && !videoUpload.dataset.bound) {
-  videoUpload.dataset.bound = "true";
+     if (videoUpload && !videoUpload.dataset.bound) {
+     videoUpload.dataset.bound = "true";
 
-  videoUpload.addEventListener("change", async () => {
+     videoUpload.addEventListener("change", () => {
 
-    const file = videoUpload.files[0];
-    if (!file) return;
+     const file = videoUpload.files[0];
+     if (!file) return;
 
-    // ================= USER CHECK =================
-    if (!currentUser) {
+     if (!currentUser) {
+     alert("Login required");
+     return;
+     }
+
+     // 🔥 सिर्फ preview
+      const url = URL.createObjectURL(file);
+      videoPreview.src = url;
+
+     if (wrapper) wrapper.style.display = "block";
+     if (videoPreview) videoPreview.style.display = "block";
+    });
+    }
+
+     // ================= REAL UPLOAD =================
+      if (uploadBtn && !uploadBtn.dataset.bound) {
+      uploadBtn.dataset.bound = "true";
+
+      uploadBtn.addEventListener("click", async () => {
+
+      const file = videoUpload.files[0];
+      if (!file) return;
+
+      if (!currentUser) {
       alert("Login required");
       return;
-    }
+     }
 
-    // ================= PREVIEW =================
-    const url = URL.createObjectURL(file);
-    videoPreview.src = url;
+     try {
 
-    if (wrapper) wrapper.style.display = "block";
-    if (videoPreview) videoPreview.style.display = "block";
+      // 🔥 loading UI
+       uploadBtn.textContent = "Uploading...";
+       uploadBtn.disabled = true;
 
-    // BM FIX: avoid multiple close listeners
-    if (closeBtn && !closeBtn.dataset.bound) {
-      closeBtn.dataset.bound = "true";
+       const formData = new FormData();
+       formData.append("file", file);
+       formData.append("upload_preset", "bmreels_preset");
 
-      closeBtn.addEventListener("click", () => {
-        if (wrapper) wrapper.style.display = "none";
-        if (videoPreview) videoPreview.src = "";
-      });
-    }
+        const res = await fetch("https://api.cloudinary.com/v1_1/dzbzbljod/video/upload", {
+         method: "POST",
+         body: formData
+       });
 
-    try {
+       const data = await res.json();
 
-      // ================= CLOUDINARY UPLOAD =================
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("upload_preset", "bmreels_preset");
-
-      const res = await fetch("https://api.cloudinary.com/v1_1/dzbzbljod/video/upload", {
-        method: "POST",
-        body: formData
-      });
-
-      if (!res.ok) {
-        throw new Error("Cloudinary upload failed");
-      }
-
-      const data = await res.json();
-      console.log("CLOUD:", data);
-
-      if (!data.secure_url) {
+        if (!data.secure_url) {
         alert("Upload failed");
         return;
-      }
+       }
 
-      // ================= SAVE TO DB =================
-      const saveRes = await fetch(`${BASE_URL}/api/save-video`, {
-        method: "POST",
-        headers: {
+        await fetch(`${BASE_URL}/api/save-video`, {
+          method: "POST",
+          headers: {
           "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
+         },
+          body: JSON.stringify({
           url: data.secure_url,
           username: currentUser,
           caption: captionInput?.value || ""
-        })
-      });
+         })
+        });
 
-      if (!saveRes.ok) {
-        throw new Error("DB save failed");
-      }
-
-      const saveData = await saveRes.json();
-      console.log("DB:", saveData);
-
-      // ================= UI RESET =================
-      if (videoPreview) {
-        videoPreview.style.display = "none";
+        // 🔥 UI reset
         videoPreview.src = "";
+        wrapper.style.display = "none";
+        uploadBox.classList.remove("show");
+
+        captionInput.value = "";
+
+       // 🔥 reload feed
+        offset = 0;
+        document.getElementById("reelsContainer").innerHTML = "";
+        await loadVideos();
+
+         } catch (err) {
+            console.log(err);
+          alert("Upload error");
+        } finally {
+           uploadBtn.textContent = "Upload";
+           uploadBtn.disabled = false;
+          }
+
+       });
       }
 
-      if (wrapper) wrapper.style.display = "none";
-      if (uploadBox) uploadBox.classList.remove("show");
-
-      if (captionInput) captionInput.value = "";
-      if (usernameInput) usernameInput.value = "";
-
-      // ================= RELOAD FEED =================
-      offset = 0;
+      // ================= INFINITE SCROLL =================
 
       const container = document.getElementById("reelsContainer");
-      if (container) {
-        container.innerHTML = "";
-      }
 
-      await loadVideos();
+     if (container && !container.dataset.scrollBound) {
+     container.dataset.scrollBound = "true";
 
-    } catch (err) {
-      console.log("UPLOAD ERROR:", err);
-      alert("Upload error, try again");
+     container.addEventListener("scroll", () => {
 
-      if (videoPreview) videoPreview.style.display = "none";
-    }
+       // BM FIX: prevent multiple load calls
+      if (isLoading) return;
 
-  });
-}
-
-
-// ================= INFINITE SCROLL =================
-
-const container = document.getElementById("reelsContainer");
-
-if (container && !container.dataset.scrollBound) {
-  container.dataset.scrollBound = "true";
-
-  container.addEventListener("scroll", () => {
-
-    // BM FIX: prevent multiple load calls
-    if (isLoading) return;
-
-    const nearBottom =
+      const nearBottom =
       container.scrollTop + container.clientHeight >=
       container.scrollHeight - 80; // BM UPDATE: थोड़ा buffer
 
-    if (nearBottom) {
+      if (nearBottom) {
       loadVideos();
-    }
+     }
 
-  });
-}
+   });
+  }
 
 
 // ================= VIDEO PLAY/PAUSE CLICK =================
