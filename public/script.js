@@ -544,10 +544,17 @@ function setupScrollVideo() {
         rect.bottom > window.innerHeight * 0.25;
 
       if (isVisible) {
-        video.play().catch(() => {});
-      } else {
-        video.pause();
-      }
+
+      // 🔥 NEW: बाकी सब video pause करो
+      document.querySelectorAll("#reelsContainer video").forEach(v => {
+      if (v !== video) v.pause();
+      });
+
+      video.play().catch(() => {});
+
+    } else {
+      video.pause();
+    }
 
     });
 
