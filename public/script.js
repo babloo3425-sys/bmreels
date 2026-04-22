@@ -26,7 +26,13 @@
    const loginBox = document.getElementById("loginBox");
    const logoutBtn = document.getElementById("logoutBtn"); // BM UPDATE: moved here for clean structure
 
+    // ================= SAFE LOGIN GUARD =================
+   const currentUser = localStorage.getItem("bm_user");
 
+   // अगर user नहीं है → login page भेजो
+   if (!currentUser) {
+    window.location.href = "index.html";
+   }
    // ================= AUTO LOGIN =================
    const savedUser = localStorage.getItem("bm_user");
 
