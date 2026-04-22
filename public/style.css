@@ -640,3 +640,17 @@ body {
   background: white;
   transition: width 0.1s linear;
 }
+
+/* ================= VIDEO LOADER ================= */
+.videoLoader {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+  font-size: 30px;
+  color: white;
+
+  display: none;
+  z-index: 10;
+}

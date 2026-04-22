@@ -147,6 +147,8 @@ if (currentUser) {
 
       // ================= REEL HTML =================
       div.innerHTML = `
+        <div class="videoLoader">⏳</div> 
+      
         <video src="${video.url}" autoplay loop muted playsinline preload="metadata"></video>
 
         <div class="videoProgress">
@@ -266,6 +268,23 @@ if (currentUser) {
          progressBar.style.width = "0%";
          });
         }
+
+         // ================= 🔄 VIDEO LOADER =================
+        const loader = div.querySelector(".videoLoader");
+
+        if (loader) {
+
+         // ⏳ loading start
+         videoEl.addEventListener("waiting", () => {
+         loader.style.display = "block";
+        });
+
+        // ▶️ playing start
+        videoEl.addEventListener("playing", () => {
+        loader.style.display = "none";
+       });
+
+       }
 
        // ================= VIEW COUNT SIMPLE =================
        videoEl.addEventListener("play", async () => {
