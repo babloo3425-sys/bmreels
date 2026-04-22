@@ -147,7 +147,7 @@ if (currentUser) {
 
       // ================= REEL HTML =================
       div.innerHTML = `
-        <div class="videoLoader">⏳</div> 
+        <div class="videoLoader"></div>
       
         <video src="${video.url}" autoplay loop muted playsinline preload="metadata"></video>
 
