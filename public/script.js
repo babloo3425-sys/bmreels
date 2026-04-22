@@ -37,7 +37,7 @@
    const savedUser = localStorage.getItem("bm_user");
 
     if (savedUser) {
-    currentUser = savedUser;
+    let currentUser = savedUser;
 
     // BM UPDATE: safe check (avoid null error)
     if (loginBox) {
