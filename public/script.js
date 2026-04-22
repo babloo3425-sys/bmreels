@@ -7,6 +7,7 @@
    const panel = document.getElementById("commentPanel");
    const commentList = document.getElementById("commentList");
 
+   let globalSoundOn = false;
    let currentVideo = null;   
    let currentVideoId = null;
    let commentsData = {};
@@ -245,7 +246,7 @@ if (currentUser) {
        const muteBtn = div.querySelector(".muteBtn");
        const videoEl = div.querySelector("video");
 
-        videoEl.muted = true;
+        videoEl.muted = !globalSoundOn;
 
         muteBtn.addEventListener("click", () => {
         videoEl.muted = !videoEl.muted;
@@ -945,6 +946,20 @@ if (!document.body.dataset.videoClickBound) {
 
   });
 }
+  // ================= 🔊 AUTO SOUND =================
+     document.addEventListener("click", (e) => {
+
+     if (e.target.tagName === "VIDEO") {
+
+     globalSoundOn = true;
+
+     document.querySelectorAll("video").forEach(v => {
+       v.muted = false;
+     });
+
+    }
+
+  });
 
 // ================= MENU SYSTEM =================
 
