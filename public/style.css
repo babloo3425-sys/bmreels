@@ -401,6 +401,10 @@ body {
 
 }
 
+.hide {
+  display: none !important;
+}
+
 /* 🔥 Top Left Header */
 .appHeader {
   position: fixed;
