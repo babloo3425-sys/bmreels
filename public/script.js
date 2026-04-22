@@ -148,7 +148,11 @@ if (currentUser) {
       // ================= REEL HTML =================
       div.innerHTML = `
         <video src="${video.url}" autoplay loop muted playsinline preload="metadata"></video>
-        
+
+        <div class="videoProgress">
+        <div class="videoProgressBar"></div>
+        </div>
+
         <div class="centerHeart">❤️</div>
     
         <div class="info">
@@ -245,6 +249,23 @@ if (currentUser) {
         videoEl.muted = !videoEl.muted;
         muteBtn.textContent = videoEl.muted ? "🔇" : "🔊";
        });
+
+         // ================= 🎥 VIDEO PROGRESS =================
+         const progressBar = div.querySelector(".videoProgressBar");
+
+        if (progressBar) {
+         videoEl.addEventListener("timeupdate", () => {
+        if (!videoEl.duration) return;
+
+        const percent = (videoEl.currentTime / videoEl.duration) * 100;
+        progressBar.style.width = percent + "%";
+        });
+
+        // 🔥 reset when video restarts
+         videoEl.addEventListener("ended", () => {
+         progressBar.style.width = "0%";
+         });
+        }
 
        // ================= VIEW COUNT SIMPLE =================
        videoEl.addEventListener("play", async () => {
