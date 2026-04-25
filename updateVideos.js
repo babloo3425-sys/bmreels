@@ -1,10 +1,18 @@
 const mongoose = require("mongoose");
 
-// 👉 अपना MongoDB URL डालो
-mongoose.connect("YOUR_MONGO_URI");
+// 👉 apna MongoDB URI
+mongoose.connect("mongodb+srv://bblkumar8_db_user:BBlk1973MMkrSH@cluster0.baicjxm.mongodb.net/?retryWrites=true&w=majority");
 
-const Video = require("./models/Video"); // path check करो
+// 👇 schema define karo (ONLY ONCE)
+const videoSchema = new mongoose.Schema({
+  url: String,
+  username: String,
+  caption: String,
+});
 
+const Video = mongoose.model("Video", videoSchema);
+
+// 🔥 update logic
 async function updateVideos() {
   try {
     const videos = await Video.find();
