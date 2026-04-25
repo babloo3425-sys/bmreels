@@ -119,11 +119,17 @@ app.get("/api/videos", async (req, res) => {
 app.post("/api/save-video", async (req, res) => {
   try {
 
-    const { url, username, caption } = req.body;
+    let { url, username, caption } = req.body;
 
     if (!url || !username) {
       return res.status(400).json({ success: false });
     }
+
+    // 🔥 CLOUDINARY OPTIMIZATION (MAIN FIX)
+    url = url.replace(
+      "/upload/",
+      "/upload/q_auto:low,f_auto/"
+    );
 
     const newVideo = new Video({
       url,
@@ -140,7 +146,6 @@ app.post("/api/save-video", async (req, res) => {
     res.status(500).json({ success: false });
   }
 });
-
 
 // 🔥 DELETE VIDEO (SECURE)
 app.post("/api/delete-video/:id", async (req, res) => {
