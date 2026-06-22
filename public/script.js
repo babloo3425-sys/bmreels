@@ -1076,7 +1076,7 @@ if (uploadBtn) {
       formData.append("file", file);
       formData.append("upload_preset", "bmreels_preset");
 
-      const res = await fetch("https://api.cloudinary.com/v1_1/dzbzbljod/video/upload", {
+      const res = await fetch("https://api.cloudinary.com/v1_1/dzdbcutwi/video/upload", {
         method: "POST",
         body: formData
       });
